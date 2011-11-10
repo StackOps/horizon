@@ -18,8 +18,8 @@ pep8
 pylint
 coverage
 glance
+pycrypto
 
--e git+https://github.com/stackops/quantum.git@stable/diablo#egg=quantum
 -e git+https://github.com/jacobian/openstack.compute.git#egg=openstack
 -e git+https://github.com/cloudbuilders/openstackx.git@diablo#egg=openstackx
 -e git://github.com/rackspace/python-novaclient.git#egg=python-novaclient
