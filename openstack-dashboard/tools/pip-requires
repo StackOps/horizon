@@ -20,6 +20,3 @@ coverage
 glance
 pycrypto
 python-novaclient==2.6.7
-
--e git+https://github.com/jacobian/openstack.compute.git#egg=openstack
--e git+https://github.com/cloudbuilders/openstackx.git@diablo#egg=openstackx
