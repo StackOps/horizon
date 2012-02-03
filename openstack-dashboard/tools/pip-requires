@@ -14,7 +14,7 @@ paste
 PasteDeploy
 python-cloudfiles
 python-dateutil
-quantum
+#quantum
 routes
 sqlalchemy
 sqlalchemy-migrate
@@ -28,3 +28,4 @@ xattr
 -e git+https://github.com/jacobian/openstack.compute.git#egg=openstack
 -e git+https://github.com/rackspace/python-novaclient.git@13b7edfc420d3cf537cbb43f66f73356aa891eb8#egg=python-novaclient
 -e git+https://github.com/4P/python-keystoneclient.git@6cd7a4302452ef9f801629d3f4c6a61bb61bc6f6#egg=python-keystoneclient
+-e git+https://github.com/openstack/quantum.git#egg=quantum
