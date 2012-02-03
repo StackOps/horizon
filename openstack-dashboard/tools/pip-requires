@@ -1,25 +1,30 @@
-nose==1.0.0
+coverage
+CherryPy
 Django==1.3
-django-nose==0.1.2
 django-mailer
+django-nose==0.1.2
+django-nose-selenium
 django-registration==0.7
+eventlet
+glance
 kombu
-python-cloudfiles
-python-dateutil
-routes
-webob
-sqlalchemy
+mox
+nose==1.0.0
 paste
 PasteDeploy
+python-cloudfiles
+python-dateutil
+quantum
+routes
+sqlalchemy
 sqlalchemy-migrate
-eventlet
-xattr
 pep8
 pylint
-coverage
-glance
-pycrypto
-python-novaclient==2.6.7
-httplib2==0.6.0
-argparse==1.1
-prettytable==0.5
+sphinx
+webob
+xattr
+
+-e git+https://github.com/cloudbuilders/openstackx.git@9faf30b573ddbcc307ed251d22bd81bf9f99f962#egg=openstackx
+-e git+https://github.com/jacobian/openstack.compute.git#egg=openstack
+-e git+https://github.com/rackspace/python-novaclient.git@13b7edfc420d3cf537cbb43f66f73356aa891eb8#egg=python-novaclient
+-e git+https://github.com/4P/python-keystoneclient.git@6cd7a4302452ef9f801629d3f4c6a61bb61bc6f6#egg=python-keystoneclient
