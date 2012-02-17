@@ -108,7 +108,8 @@ def create_virtualenv(venv=VENV):
 
 def install_dependencies(venv=VENV):
     print 'Installing dependencies with pip (this can take a while)...'
-    run_command([WITH_VENV, 'pip', 'install', '-E', venv, '-r', PIP_REQUIRES],
+#    run_command([WITH_VENV, 'pip', 'install', '-E', venv, '-r', PIP_REQUIRES],
+    run_command([WITH_VENV, 'pip', 'install', '-r', PIP_REQUIRES],
                 redirect_output=False)
 
     # Tell the virtual env how to "import dashboard"
