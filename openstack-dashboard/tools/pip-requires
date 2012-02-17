@@ -19,8 +19,7 @@ pylint
 coverage
 glance
 pycrypto
-#python-novaclient==2.6.7
-python-novaclient
+python-novaclient==2.6.0
 httplib2==0.6.0
 argparse==1.1
 prettytable==0.5
