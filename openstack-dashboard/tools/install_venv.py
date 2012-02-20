@@ -98,7 +98,8 @@ def create_virtualenv(venv=VENV):
     virtual environment
     """
     print 'Creating venv...',
-    run_command(['virtualenv', '-q', '--no-site-packages', VENV])
+#    run_command(['virtualenv', '-q', '--no-site-packages', VENV])
+    run_command(['virtualenv', '-q', VENV])
     print 'done.'
     print 'Installing pip in virtualenv...',
     if not run_command([WITH_VENV, 'easy_install', 'pip']).strip():
