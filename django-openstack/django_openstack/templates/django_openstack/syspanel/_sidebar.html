@@ -12,7 +12,7 @@
     <li><a {% if current_sidebar == "users" %} class="active" {% endif %} href="{% url syspanel_users %}">Users</a></li>
     <li><a {% if current_sidebar == "quotas" %} class="active" {% endif %} href="{% url syspanel_quotas %}">Quotas</a></li>
   </ul>
-  
+
   {% syspanel_sidebar_modules request %}
 
 </div>
