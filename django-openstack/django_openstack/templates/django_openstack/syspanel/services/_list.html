@@ -43,9 +43,11 @@
       <td>{{service.disabled|yesno:"Disabled,Enabled"}}</td>
       <td>{{service.up}}</td>
       <td id="actions">
+          {% if enabled %}
         <ul>
           <li class="form">{% include "django_openstack/syspanel/services/_toggle.html" with form=service_toggle_enabled_form %}</li>
         </ul>
+          {% endif %}
       </td>
     </tr>
   {% endfor %}

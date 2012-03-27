@@ -108,9 +108,14 @@ def index(request):
     other_services = sorted(other_services, key=lambda svc: (svc['type'] +
                                                              svc['host']))
 
+    try:
+        enabled = not settings.DISABLE_SERVICE_ACTIONS
+    except Exception:
+        enabled = True
     return render_to_response(
     'django_openstack/syspanel/services/index.html', {
         'services': services,
         'service_toggle_enabled_form': ToggleService,
         'other_services': other_services,
+        'enabled' : enabled,
     }, context_instance=template.RequestContext(request))

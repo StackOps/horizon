@@ -30,9 +30,11 @@
             <td>{{user.name}}</td>
             <td>{{user.email}}</td>
             <td id="actions">
+                {% if enabled or user.id|add:"0" > 1 %}
               <ul>
                 <li class="form">{% include "django_openstack/syspanel/tenants/_remove_user.html" with form=remove_user_form %}</li>
               </ul>
+                {% endif %}
             </td>
         </tr>
         {% endfor %}

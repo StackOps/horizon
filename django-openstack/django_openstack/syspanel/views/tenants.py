@@ -205,10 +205,15 @@ def index(request):
         LOG.exception('ApiException while getting tenant list')
         messages.error(request, 'Unable to get tenant info: %s' % e.message)
     tenants.sort(key=lambda x: x.id, reverse=True)
+    try:
+        enabled = not settings.DISABLE_TENANTS
+    except Exception:
+        enabled = True
     return render_to_response(
     'django_openstack/syspanel/tenants/index.html', {
         'tenants': tenants,
         'tenant_delete_form': tenant_delete_form,
+        'enabled' : enabled,
     }, context_instance=template.RequestContext(request))
 
 
@@ -267,6 +272,10 @@ def users(request, tenant_id):
     all_users = api.account_api(request).users.list()
     user_ids = [u.id for u in users]
     new_users = [u for u in all_users if not u.id in user_ids]
+    try:
+        enabled = not settings.DISABLE_TENANTS
+    except Exception:
+        enabled = True
     return render_to_response(
     'django_openstack/syspanel/tenants/users.html', {
         'add_user_form': add_user_form,
@@ -274,6 +283,7 @@ def users(request, tenant_id):
         'tenant_id': tenant_id,
         'users': users,
         'new_users': new_users,
+        'enabled' : enabled,
     }, context_instance=template.RequestContext(request))
 
 

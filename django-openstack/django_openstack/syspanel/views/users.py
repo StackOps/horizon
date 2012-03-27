@@ -129,10 +129,16 @@ def index(request):
     user_delete_form = UserDeleteForm()
     user_enable_disable_form = UserEnableDisableForm()
 
+    try:
+        enabled = not settings.DISABLE_TENANTS
+    except Exception:
+        enabled = True
+
     return shortcuts.render_to_response('django_openstack/syspanel/users/index.html', {
         'users': users,
         'user_delete_form': user_delete_form,
         'user_enable_disable_form': user_enable_disable_form,
+        'enabled' : enabled,
     }, context_instance=template.RequestContext(request))
 
 

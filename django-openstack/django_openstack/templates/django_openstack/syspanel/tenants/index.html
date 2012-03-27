@@ -14,7 +14,9 @@
 
 {% block syspanel_main %}
   {% include "django_openstack/syspanel/tenants/_list.html" %}
-  <a id="tenant_create_link" class="action_link large-rounded" href="{% url syspanel_tenants_create %}">Create New Tenant </a>
+  {% if enabled %}
+     <a id="tenant_create_link" class="action_link large-rounded" href="{% url syspanel_tenants_create %}">Create New Tenant </a>
+  {% endif %}
 {% endblock %}
 
 
