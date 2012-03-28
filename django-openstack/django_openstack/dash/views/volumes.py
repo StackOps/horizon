@@ -45,7 +45,7 @@ class CreateForm(forms.SelfHandlingForm):
 
 class DeleteForm(forms.SelfHandlingForm):
     volume_id = forms.CharField(widget=forms.HiddenInput())
-    volume_name = forms.CharField(widget=forms.HiddenInput())
+#    volume_name = forms.CharField(widget=forms.HiddenInput())
 
     def handle(self, request, data):
         try:

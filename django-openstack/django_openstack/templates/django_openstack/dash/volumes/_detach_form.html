@@ -1,10 +1,11 @@
 {% load i18n %}
-<form id="form_delete_{{ volume.id }}" class="form-delete" method="post">
+<form id="form_detach_{{ volume.id }}" class="form-detach" method="post">
     {% csrf_token %}
     {% for hidden in form.hidden_fields %}
     {{ hidden }}
     {% endfor %}
     <input name="volume_id" type="hidden" value="{{ volume.id }}" />
-    <input name="volume_name" type="hidden" value="{{ volume.displayName }}" />
-    <input id="delete_{{ volume.id }}" class="delete" title="Volume: {{ volume.displayName }}" type="submit" value="{% trans "Delete" %}" />
+    <input name="instance_id" type="hidden" value="{{ attachment.serverId }}" />
+    <input name="attachment_id" type="hidden" value="{{ attachment.id }}" />
+    <input id="detach_{{ volume.id }}" class="detach" title="Volume: {{ volume.displayName }}" type="submit" value="{% trans "Detach" %}" />
 </form>
