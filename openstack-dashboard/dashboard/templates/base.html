@@ -31,7 +31,9 @@
       </div>
     {% endblock %}
     <div id="footer">
-      {% block footer %}{% endblock %}
+      {% block footer %}
+        {% include '_footer.html' %}
+      {% endblock %}
     </div>
     {% block footer_js %}{% endblock %}
   </body>
