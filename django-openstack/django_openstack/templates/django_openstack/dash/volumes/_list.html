@@ -24,11 +24,9 @@
         <td>
             {% for attachment in volume.attachments %}
             {% if attachment %}
-            <a href="{% url dash_instances_detail request.user.tenant_name attachment.serverId %}">
                 <!-- TODO (tres): Show instance name -->
                 Instance {{ attachment.serverId }}
                 <small>({{ attachment.device }})</small>
-            </a>
             {% else %}
             {% trans "Not Attached" %}
             {% endif %}

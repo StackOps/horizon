@@ -34,10 +34,8 @@
                         <li>
                             <span>{% trans "Attached To:" %}</span>
                             {% if instance %}
-                            <a href="{% url dash_instances_detail request.user.tenant_name attachment.serverId %}">
                                 {% trans "Instance" %} {{ instance.id }}
                                 ({{ instance.name }})
-                            </a>
                             {% trans "on" %} {{ attachment.device }}
                             {% else %}
                             {% trans "Not Attached" %}
