@@ -1,3 +1,4 @@
+mox==0.5.3
 nose==1.0.0
 Django==1.3
 django-nose==0.1.3
@@ -20,6 +21,6 @@ coverage==3.5.1
 glance==2011.3
 pycrypto==2.5
 #python-novaclient==2.6.0
-httplib2==0.6.0
+httplib2
 argparse==1.1
 prettytable==0.5
