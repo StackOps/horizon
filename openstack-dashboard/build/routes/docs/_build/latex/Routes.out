@@ -1,0 +1,31 @@
+\BOOKMARK [0][-]{chapter.1}{Introduction}{}
+\BOOKMARK [0][-]{chapter.2}{Setting up routes}{}
+\BOOKMARK [1][-]{section.2.1}{Requirements}{chapter.2}
+\BOOKMARK [1][-]{section.2.2}{Magic path\137info}{chapter.2}
+\BOOKMARK [1][-]{section.2.3}{Conditions}{chapter.2}
+\BOOKMARK [1][-]{section.2.4}{Wildcard routes}{chapter.2}
+\BOOKMARK [1][-]{section.2.5}{Format extensions}{chapter.2}
+\BOOKMARK [1][-]{section.2.6}{Submappers}{chapter.2}
+\BOOKMARK [1][-]{section.2.7}{Submapper helpers}{chapter.2}
+\BOOKMARK [1][-]{section.2.8}{Adding routes from a nested application}{chapter.2}
+\BOOKMARK [0][-]{chapter.3}{Generation}{}
+\BOOKMARK [1][-]{section.3.1}{Generating routes based on the current URL}{chapter.3}
+\BOOKMARK [1][-]{section.3.2}{Generation-only routes \(aka. static routes\)}{chapter.3}
+\BOOKMARK [1][-]{section.3.3}{Filter functions}{chapter.3}
+\BOOKMARK [1][-]{section.3.4}{Generating URLs with subdomains}{chapter.3}
+\BOOKMARK [0][-]{chapter.4}{RESTful services}{}
+\BOOKMARK [1][-]{section.4.1}{Resource options}{chapter.4}
+\BOOKMARK [0][-]{chapter.5}{Unicode, Redirects, and More}{}
+\BOOKMARK [1][-]{section.5.1}{Unicode}{chapter.5}
+\BOOKMARK [1][-]{section.5.2}{Redirect Routes}{chapter.5}
+\BOOKMARK [1][-]{section.5.3}{Printing}{chapter.5}
+\BOOKMARK [1][-]{section.5.4}{Introspection}{chapter.5}
+\BOOKMARK [1][-]{section.5.5}{Other}{chapter.5}
+\BOOKMARK [1][-]{section.5.6}{Backward compatibility}{chapter.5}
+\BOOKMARK [0][-]{chapter.6}{Glossary}{}
+\BOOKMARK [0][-]{chapter.7}{Porting Routes to a WSGI Web Framework}{}
+\BOOKMARK [1][-]{section.7.1}{RoutesMiddleware}{chapter.7}
+\BOOKMARK [1][-]{section.7.2}{URL Resolution}{chapter.7}
+\BOOKMARK [1][-]{section.7.3}{Request Configuration}{chapter.7}
+\BOOKMARK [0][-]{chapter.8}{Indices and tables}{}
+\BOOKMARK [1][-]{section.8.1}{Module Listing}{chapter.8}

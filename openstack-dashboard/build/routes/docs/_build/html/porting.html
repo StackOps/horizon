@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Porting Routes to a WSGI Web Framework &mdash; Routes v1.12.1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '#',
+        VERSION:     '1.12.1',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Routes v1.12.1 documentation"
+          href="_static/opensearch.xml"/>
+    <link rel="top" title="Routes v1.12.1 documentation" href="index.html" />
+    <link rel="next" title="Routes Modules" href="modules/index.html" />
+    <link rel="prev" title="Glossary" href="glossary.html" /> 
+  </head>
+  <body>
+<div style="color: #D1361B; font-size: 70px; font-weight: bold; padding: 10px 0 0 10px;">Routes</div>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="modules/index.html" title="Routes Modules"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="glossary.html" title="Glossary"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Routes home</a>&nbsp;|&nbsp;</li>
+        <li><a href="contents.html">Documentation</a>&raquo;</li>
+ 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="porting-routes-to-a-wsgi-web-framework">
+<h1>Porting Routes to a WSGI Web Framework<a class="headerlink" href="#porting-routes-to-a-wsgi-web-framework" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="routesmiddleware">
+<h2>RoutesMiddleware<a class="headerlink" href="#routesmiddleware" title="Permalink to this headline">¶</a></h2>
+<p>An application can create a raw mapper object and call its <tt class="docutils literal"><span class="pre">.match</span></tt> and
+<tt class="docutils literal"><span class="pre">.generate</span></tt> methods.  However, WSGI applications probably want to use
+the <tt class="docutils literal"><span class="pre">RoutesMiddleware</span></tt> as Pylons does:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># In myapp/config/middleware.py</span>
+<span class="kn">from</span> <span class="nn">routes.middleware</span> <span class="kn">import</span> <span class="n">RoutesMiddleware</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">RoutesMiddleware</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="nb">map</span><span class="p">)</span>     <span class="c"># ``map`` is a routes.Mapper.</span>
+</pre></div>
+</div>
+<p>The middleware matches the requested URL and sets the following WSGI
+variables:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">environ</span><span class="p">[</span><span class="s">&#39;wsgiorg.routing_args&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="n">url</span><span class="p">,</span> <span class="n">match</span><span class="p">))</span>
+<span class="n">environ</span><span class="p">[</span><span class="s">&#39;routes.route&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">route</span>
+<span class="n">environ</span><span class="p">[</span><span class="s">&#39;routes.url&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">url</span>
+</pre></div>
+</div>
+<p>where <tt class="docutils literal"><span class="pre">match</span></tt> is the routing variables dict, <tt class="docutils literal"><span class="pre">route</span></tt> is the matched route,
+and <tt class="docutils literal"><span class="pre">url</span></tt> is a <tt class="docutils literal"><span class="pre">URLGenerator</span></tt> object.  In Pylons, <tt class="docutils literal"><span class="pre">match</span></tt> is used by the
+dispatcher, and <tt class="docutils literal"><span class="pre">url</span></tt> is accessible as <tt class="docutils literal"><span class="pre">pylons.url</span></tt>.</p>
+<p>The middleware handles redirect routes itself, issuing the appropriate
+redirect.  The application is not called in this case.</p>
+<p>To debug routes, turn on debug logging for the &#8220;routes.middleware&#8221; logger.</p>
+<p>See the Routes source code for other features which may have been added.</p>
+</div>
+<div class="section" id="url-resolution">
+<h2>URL Resolution<a class="headerlink" href="#url-resolution" title="Permalink to this headline">¶</a></h2>
+<p>When the URL is looked up, it should be matched against the Mapper. When
+matching an incoming URL, it is assumed that the URL path is the only string
+being matched. All query args should be stripped before matching:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">m</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&#39;articles/{year}/{month}&#39;</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="s">&#39;blog&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;view&#39;</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+
+<span class="n">m</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s">&#39;/articles/2003/10&#39;</span><span class="p">)</span>
+<span class="c"># {&#39;controller&#39;:&#39;blog&#39;, &#39;action&#39;:&#39;view&#39;, &#39;year&#39;:&#39;2003&#39;, &#39;month&#39;:&#39;10&#39;}</span>
+</pre></div>
+</div>
+<p>Matching a URL will return a dict of the match results, if you&#8217;d like to
+differentiate between where the argument came from you can use routematch which
+will return the Route object that has all these details:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">m</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&#39;articles/{year}/{month}&#39;</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="s">&#39;blog&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;view&#39;</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">routematch</span><span class="p">(</span><span class="s">&#39;/articles/2003/10&#39;</span><span class="p">)</span>
+<span class="c"># result is a tuple of the match dict and the Route object</span>
+
+<span class="c"># result[0] - {&#39;controller&#39;:&#39;blog&#39;, &#39;action&#39;:&#39;view&#39;, &#39;year&#39;:&#39;2003&#39;, &#39;month&#39;:&#39;10&#39;}</span>
+<span class="c"># result[1] - Route object</span>
+<span class="c"># result[1].defaults - {&#39;controller&#39;:&#39;blog&#39;, &#39;action&#39;:&#39;view&#39;, &#39;year&#39;:None}</span>
+<span class="c"># result[1].hardcoded - [&#39;controller&#39;, &#39;action&#39;]</span>
+</pre></div>
+</div>
+<p>Your integration code is then expected to dispatch to a controller and action
+in the dict. How it does this is entirely up to the framework integrator. Your
+integration should also typically provide the web developer a mechanism to
+access the additional dict values.</p>
+</div>
+<div class="section" id="request-configuration">
+<h2>Request Configuration<a class="headerlink" href="#request-configuration" title="Permalink to this headline">¶</a></h2>
+<p>If you intend to support <tt class="docutils literal"><span class="pre">url_for()</span></tt> and <tt class="docutils literal"><span class="pre">redirect_to()</span></tt>, they depend on a
+singleton object which requires additional configuration.  You&#8217;re better off
+not supporting them at all because they will be deprecated soon.
+<tt class="docutils literal"><span class="pre">URLGenerator</span></tt> is the forward-compatible successor to <tt class="docutils literal"><span class="pre">url_for()</span></tt>.
+<tt class="docutils literal"><span class="pre">redirect_to()</span></tt> is better done in the web framework`as in
+<tt class="docutils literal"><span class="pre">pylons.controllers.util.redirect_to()</span></tt>.</p>
+<p><tt class="docutils literal"><span class="pre">url_for()</span></tt> and <tt class="docutils literal"><span class="pre">redirect_to()</span></tt> need information on the current request,
+and since they can be called from anywhere they don&#8217;t have direct access to the
+WSGI environment.  To remedy this, Routes provides a thread-safe singleton class
+called &#8220;request_config&#8221;, which holds the request information for the current
+thread. You should update this after matching the incoming URL but before
+executing any code that might call the two functions.  Here is an example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">routes</span> <span class="kn">import</span> <span class="n">request_config</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="n">request_config</span><span class="p">()</span>
+
+<span class="n">config</span><span class="o">.</span><span class="n">mapper</span> <span class="o">=</span> <span class="n">m</span>                  <span class="c"># Your mapper object</span>
+<span class="n">config</span><span class="o">.</span><span class="n">mapper_dict</span> <span class="o">=</span> <span class="n">result</span>        <span class="c"># The dict from m.match for this URL request</span>
+<span class="n">config</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">hostname</span>             <span class="c"># The server hostname</span>
+<span class="n">config</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="n">port</span>             <span class="c"># Protocol used, http, https, etc.</span>
+<span class="n">config</span><span class="o">.</span><span class="n">redirect</span> <span class="o">=</span> <span class="n">redir_func</span>       <span class="c"># A redirect function used by your framework, that is</span>
+                                   <span class="c"># expected to take as the first non-keyword arg a single</span>
+                                   <span class="c"># full or relative URL</span>
+</pre></div>
+</div>
+<p>See the docstring for <tt class="docutils literal"><span class="pre">request_config</span></tt> in routes/__init__.py to make sure
+you&#8217;ve initialized everything necessary.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="contents.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">Porting Routes to a WSGI Web Framework</a><ul>
+<li><a class="reference external" href="#routesmiddleware">RoutesMiddleware</a></li>
+<li><a class="reference external" href="#url-resolution">URL Resolution</a></li>
+<li><a class="reference external" href="#request-configuration">Request Configuration</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="glossary.html"
+                                  title="previous chapter">Glossary</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="modules/index.html"
+                                  title="next chapter">Routes Modules</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/porting.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="modules/index.html" title="Routes Modules"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="glossary.html" title="Glossary"
+             >previous</a> |</li>
+        <li><a href="index.html">Routes home</a>&nbsp;|&nbsp;</li>
+        <li><a href="contents.html">Documentation</a>&raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Ben Bangert, Mike Orr.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+    </div>
+  </body>
+</html>

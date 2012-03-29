@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>routes – Routes Common Classes and Functions &mdash; Routes v1.12.1 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.12.1',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Routes v1.12.1 documentation"
+          href="../_static/opensearch.xml"/>
+    <link rel="top" title="Routes v1.12.1 documentation" href="../index.html" />
+    <link rel="up" title="Routes Modules" href="index.html" />
+    <link rel="next" title="routes.mapper – Mapper and Sub-Mapper" href="mapper.html" />
+    <link rel="prev" title="Routes Modules" href="index.html" /> 
+  </head>
+  <body>
+<div style="color: #D1361B; font-size: 70px; font-weight: bold; padding: 10px 0 0 10px;">Routes</div>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="mapper.html" title="routes.mapper – Mapper and Sub-Mapper"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Routes Modules"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Routes home</a>&nbsp;|&nbsp;</li>
+        <li><a href="../contents.html">Documentation</a>&raquo;</li>
+
+          <li><a href="index.html" accesskey="U">Routes Modules</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-routes">
+<h1><tt class="xref docutils literal"><span class="pre">routes</span></tt> &#8211; Routes Common Classes and Functions<a class="headerlink" href="#module-routes" title="Permalink to this headline">¶</a></h1>
+<p>Provides common classes and functions most users will want access to.</p>
+<div class="section" id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="routes.request_config">
+<tt class="descclassname">routes.</tt><tt class="descname">request_config</tt><big>(</big><em>original=False</em><big>)</big><a class="headerlink" href="#routes.request_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the Routes RequestConfig object.</p>
+<p>To get the Routes RequestConfig:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">routes</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span> <span class="o">=</span> <span class="n">request_config</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The following attributes must be set on the config object every request:</p>
+<dl class="docutils">
+<dt>mapper</dt>
+<dd>mapper should be a Mapper instance thats ready for use</dd>
+<dt>host</dt>
+<dd>host is the hostname of the webapp</dd>
+<dt>protocol</dt>
+<dd>protocol is the protocol of the current request</dd>
+<dt>mapper_dict</dt>
+<dd>mapper_dict should be the dict returned by mapper.match()</dd>
+<dt>redirect</dt>
+<dd>redirect should be a function that issues a redirect, 
+and takes a url as the sole argument</dd>
+<dt>prefix (optional)</dt>
+<dd>Set if the application is moved under a URL prefix. Prefix
+will be stripped before matching, and prepended on generation</dd>
+<dt>environ (optional)</dt>
+<dd><p class="first">Set to the WSGI environ for automatic prefix support if the
+webapp is underneath a &#8216;SCRIPT_NAME&#8217;</p>
+<p class="last">Setting the environ will use information in environ to try and
+populate the host/protocol/mapper_dict options if you&#8217;ve already
+set a mapper.</p>
+</dd>
+</dl>
+<p><strong>Using your own requst local</strong></p>
+<p>If you have your own request local object that you&#8217;d like to use instead 
+of the default thread local provided by Routes, you can configure Routes 
+to use it:</p>
+<div class="highlight-python"><pre>from routes import request_config()
+config = request_config()
+if hasattr(config, 'using_request_local'):
+    config.request_local = YourLocalCallable
+    config = request_config()</pre>
+</div>
+<p>Once you have configured request_config, its advisable you retrieve it 
+again to get the object you wanted. The variable you assign to 
+request_local is assumed to be a callable that will get the local config 
+object you wish.</p>
+<p>This example tests for the presence of the &#8216;using_request_local&#8217; attribute
+which will be present if you haven&#8217;t assigned it yet. This way you can 
+avoid repeat assignments of the request specific callable.</p>
+<p>Should you want the original object, perhaps to change the callable its 
+using or stop this behavior, call request_config(original=True).</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="routes._RequestConfig">
+<em class="property">class </em><tt class="descclassname">routes.</tt><tt class="descname">_RequestConfig</tt><a class="headerlink" href="#routes._RequestConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>RequestConfig thread-local singleton</p>
+<p>The Routes RequestConfig object is a thread-local singleton that should 
+be initialized by the web framework that is utilizing Routes.</p>
+<dl class="method">
+<dt id="routes._RequestConfig.load_wsgi_environ">
+<tt class="descname">load_wsgi_environ</tt><big>(</big><em>environ</em><big>)</big><a class="headerlink" href="#routes._RequestConfig.load_wsgi_environ" title="Permalink to this definition">¶</a></dt>
+<dd>Load the protocol/server info from the environ and store it.
+Also, match the incoming URL if there&#8217;s already a mapper, and
+store the resulting match dict in mapper_dict.</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../contents.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#"><tt class="docutils literal"><span class="pre">routes</span></tt> &#8211; Routes Common Classes and Functions</a><ul>
+<li><a class="reference external" href="#module-contents">Module Contents</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="index.html"
+                                  title="previous chapter">Routes Modules</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="mapper.html"
+                                  title="next chapter"><tt class="docutils literal docutils literal docutils literal"><span class="pre">routes.mapper</span></tt> &#8211; Mapper and Sub-Mapper</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/modules/routes.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mapper.html" title="routes.mapper – Mapper and Sub-Mapper"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Routes Modules"
+             >previous</a> |</li>
+        <li><a href="../index.html">Routes home</a>&nbsp;|&nbsp;</li>
+        <li><a href="../contents.html">Documentation</a>&raquo;</li>
+
+          <li><a href="index.html" >Routes Modules</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Ben Bangert, Mike Orr.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+    </div>
+  </body>
+</html>

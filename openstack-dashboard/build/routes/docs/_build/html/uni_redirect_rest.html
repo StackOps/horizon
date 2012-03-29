@@ -1,0 +1,329 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Unicode, Redirects, and More &mdash; Routes v1.12.1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '#',
+        VERSION:     '1.12.1',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Routes v1.12.1 documentation"
+          href="_static/opensearch.xml"/>
+    <link rel="top" title="Routes v1.12.1 documentation" href="index.html" />
+    <link rel="next" title="Glossary" href="glossary.html" />
+    <link rel="prev" title="RESTful services" href="restful.html" /> 
+  </head>
+  <body>
+<div style="color: #D1361B; font-size: 70px; font-weight: bold; padding: 10px 0 0 10px;">Routes</div>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="glossary.html" title="Glossary"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="restful.html" title="RESTful services"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Routes home</a>&nbsp;|&nbsp;</li>
+        <li><a href="contents.html">Documentation</a>&raquo;</li>
+ 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="unicode-redirects-and-more">
+<h1>Unicode, Redirects, and More<a class="headerlink" href="#unicode-redirects-and-more" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="unicode">
+<h2>Unicode<a class="headerlink" href="#unicode" title="Permalink to this headline">¶</a></h2>
+<p>Routes assumes UTF-8 encoding on incoming URLs, and <tt class="docutils literal"><span class="pre">url</span></tt> and <tt class="docutils literal"><span class="pre">url_for</span></tt>
+also generate UTF-8.  You can change the encoding with the <tt class="docutils literal"><span class="pre">map.charset</span></tt>
+attribute:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">map</span><span class="o">.</span><span class="n">charset</span> <span class="o">=</span> <span class="s">&quot;latin-1&quot;</span>
+</pre></div>
+</div>
+<p>New in Routes 1.10: several bugfixes.</p>
+</div>
+<div class="section" id="redirect-routes">
+<h2>Redirect Routes<a class="headerlink" href="#redirect-routes" title="Permalink to this headline">¶</a></h2>
+<p>Redirect routes allow you to specify redirects in the route map, similar to
+RewriteRule in an Apache configuration.  This avoids the need to define dummy
+controller actions just to handle redirects.  It&#8217;s especially useful when the
+URL structure changes and you want to redirect legacy URLs to their new
+equivalents.  The redirection is done by the Routes middleware, and the WSGI
+application is not called.</p>
+<p><tt class="docutils literal"><span class="pre">map.redirect</span></tt> takes two positional arguments:  the route path and the
+destination URL.  Redirect routes do not have a name.  Both paths can contain
+variables, and the route path can take inline requirements.  Keyword arguments
+are the same as <tt class="docutils literal"><span class="pre">map.connect</span></tt>, both in regards to extra variables and to route
+options.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">map</span><span class="o">.</span><span class="n">redirect</span><span class="p">(</span><span class="s">&quot;/legacyapp/archives/{url:.*}&quot;</span><span class="p">,</span> <span class="s">&quot;/archives/{url}&quot;</span><span class="p">)</span>
+
+<span class="nb">map</span><span class="o">.</span><span class="n">redirect</span><span class="p">(</span><span class="s">&quot;/legacyapp/archives/{url:.*}&quot;</span><span class="p">,</span> <span class="s">&quot;/archives/{url}&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>By default a &#8220;302 Found&#8221; HTTP status is issued.  You can override this with the
+<tt class="docutils literal"><span class="pre">_redirect_code</span></tt> keyword argument.  The value must be an entire status
+string.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">map</span><span class="o">.</span><span class="n">redirect</span><span class="p">(</span><span class="s">&quot;/home/index&quot;</span><span class="p">,</span> <span class="s">&quot;/&quot;</span><span class="p">,</span> <span class="n">_redirect_code</span><span class="o">=</span><span class="s">&quot;301 Moved Permanently&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><em>New in Routes 1.10.</em></p>
+</div>
+<div class="section" id="printing">
+<h2>Printing<a class="headerlink" href="#printing" title="Permalink to this headline">¶</a></h2>
+<p>Mappers now have a formatted string representation.  In your python shell,
+simply print your application&#8217;s mapper:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="nb">map</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s">&quot;entries&quot;</span><span class="p">,</span> <span class="s">&quot;entry&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="nb">map</span>
+<span class="go">Route name   Methods Path</span>
+<span class="go">entries      GET     /entries{.format}</span>
+<span class="go">create_entry POST    /entries{.format}</span>
+<span class="go">new_entry    GET     /entries/new{.format}</span>
+<span class="go">entry        GET     /entries/{id}{.format}</span>
+<span class="go">update_entry PUT     /entries/{id}{.format}</span>
+<span class="go">delete_entry DELETE  /entries/{id}{.format}</span>
+<span class="go">edit_entry   GET     /entries/{id}/edit{.format}</span>
+</pre></div>
+</div>
+<p><em>New in Routes 1.12.</em></p>
+</div>
+<div class="section" id="introspection">
+<h2>Introspection<a class="headerlink" href="#introspection" title="Permalink to this headline">¶</a></h2>
+<p>The mapper attribute <tt class="docutils literal"><span class="pre">.matchlist</span></tt> contains the list of routes to be matched
+against incoming URLs.  You can iterate this list to see what routes are
+defined.  This can be useful when debugging route configurations.</p>
+</div>
+<div class="section" id="other">
+<h2>Other<a class="headerlink" href="#other" title="Permalink to this headline">¶</a></h2>
+<p>If your application is behind an HTTP proxy such a load balancer on another
+host, the WSGI environment will refer to the internal server rather than to the
+proxy, which will mess up generated URLs.  Use the ProxyMiddleware in
+PasteDeploy to fix the WSGI environment to what it would have been without the
+proxy.</p>
+<p>To debug routes, turn on debug logging for the &#8220;routes.middleware&#8221; logger.
+(See Python&#8217;s <tt class="docutils literal"><span class="pre">logging</span></tt> module to set up your logging configuration.)</p>
+</div>
+<div class="section" id="backward-compatibility">
+<h2>Backward compatibility<a class="headerlink" href="#backward-compatibility" title="Permalink to this headline">¶</a></h2>
+<p>The following syntaxes are allowed for compatibility with previous versions
+of Routes.  They may be removed in the future.</p>
+<div class="section" id="omitting-the-name-arg">
+<h3>Omitting the name arg<a class="headerlink" href="#omitting-the-name-arg" title="Permalink to this headline">¶</a></h3>
+<p>In the tutorial we said that nameless routes can be defined by passing <tt class="xref docutils literal"><span class="pre">None</span></tt>
+as the first argument.  You can also omit the first argument entirely:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">map</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="s">&quot;/{controller}/{action}&quot;</span><span class="p">)</span>
+<span class="nb">map</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;/{controller}/{action}&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The syntax with <tt class="xref docutils literal"><span class="pre">None</span></tt> is preferred to be forward-compatible with future
+versions of Routes.  It avoids the path argument changing position between
+the first and second arguments, which is unpythonic.</p>
+</div>
+<div class="section" id="varname">
+<h3>:varname<a class="headerlink" href="#varname" title="Permalink to this headline">¶</a></h3>
+<p>Path variables were defined in the format <tt class="docutils literal"><span class="pre">:varname</span></tt> and <tt class="docutils literal"><span class="pre">:(varname)</span></tt>
+prior to Routes 1.9.  The form with parentheses was called &#8220;grouping&#8221;, used
+to delimit the variable name from a following letter or number.  Thus the old
+syntax &#8220;/:controller/:(id)abc&#8221; corresponds to the new syntax
+&#8220;/{controller}/{id}abc&#8221;.</p>
+<p>The older wildcard syntax is <tt class="docutils literal"><span class="pre">*varname</span></tt> or <tt class="docutils literal"><span class="pre">*(varname)</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># OK because the following component is static.</span>
+<span class="nb">map</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;/static/*filename/download&quot;</span><span class="p">)</span>
+
+<span class="c"># Deprecated syntax.  WRONG because the wildcard will eat the rest of the</span>
+<span class="c"># URL, leaving nothing for the following variable, which will cause the</span>
+<span class="c"># match to fail.</span>
+<span class="nb">map</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;/static/*filename/:action&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="minimization">
+<h3>Minimization<a class="headerlink" href="#minimization" title="Permalink to this headline">¶</a></h3>
+<p>Minimization was a misfeature which was intended to save typing, but which
+often resulted in the wrong route being chosen.  Old applications that still
+depend on it must now enable it by putting <tt class="docutils literal"><span class="pre">map.minimization</span> <span class="pre">=</span> <span class="pre">True</span></tt> in
+their route definitions.</p>
+<p>Without minimization, the URL must contain values for all path variables in
+the route:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">map</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;basic&quot;</span><span class="p">,</span> <span class="s">&quot;/{controller}/{action}&quot;</span><span class="p">,</span>
+    <span class="n">controller</span><span class="o">=</span><span class="s">&quot;mycontroller&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;myaction&quot;</span><span class="p">,</span> <span class="n">weather</span><span class="o">=</span><span class="s">&quot;sunny&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This route matches any two-component URL, for instance &#8220;/help/about&#8221;.  The
+resulting routing variables would be:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&quot;controller&quot;</span><span class="p">:</span> <span class="s">&quot;help&quot;</span><span class="p">,</span> <span class="s">&quot;action&quot;</span><span class="p">:</span> <span class="s">&quot;about&quot;</span><span class="p">,</span> <span class="s">&quot;weather&quot;</span><span class="p">:</span> <span class="s">&quot;sunny&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The path variables are taken from the URL, and any extra variables are added as
+constants.  The extra variables for &#8220;controller&#8221; and &#8220;action&#8221; are <em>never used</em>
+in matching, but are available as default values for generation:</p>
+<div class="highlight-python"><pre>url("basic", controller="help") =&gt; "/help/about?weather=sunny"</pre>
+</div>
+<p>With minimization, the same route path would also match shorter URLs such as
+&#8220;/help&#8221;, &#8220;/foo&#8221;, and &#8220;/&#8221;.  Missing values on the right of the URL would be
+taken from the extra variables.  This was intended to lessen the number of
+routes you had to write.  In practice it led to obscure application bugs
+because sometimes an unexpected route would be matched.  Thus Routes 1.9
+introduced non-minimization and recommended &#8220;map.minimization = False&#8221; for
+all new applications.</p>
+<p>A corollary problem was generating the wrong route.  Routes 1.9 tightened up
+the rule for generating named routes.  If a route name is specified in
+<tt class="docutils literal"><span class="pre">url()</span></tt> or <tt class="docutils literal"><span class="pre">url_for()</span></tt>, <em>only</em> that named route will be chosen.  In
+previous versions, it might choose another route based on the keyword args.</p>
+</div>
+<div class="section" id="implicit-defaults-and-route-memory">
+<h3>Implicit defaults and route memory<a class="headerlink" href="#implicit-defaults-and-route-memory" title="Permalink to this headline">¶</a></h3>
+<p>Implicit defaults worked with minimization to provide automatic default values
+for the &#8220;action&#8221; and &#8220;id&#8221; variables.  If a route was defined as
+<tt class="docutils literal"><span class="pre">map.connect(&quot;/{controller}/{action}/{id}&quot;)</span> <span class="pre">and</span> <span class="pre">the</span> <span class="pre">URL</span> <span class="pre">&quot;/archives&quot;</span></tt> was
+requested, Routes would implicitly add <tt class="docutils literal"><span class="pre">action=&quot;index&quot;,</span> <span class="pre">id=None</span></tt> to the
+routing variables.</p>
+<p>To enable implicit defaults, set <tt class="docutils literal"><span class="pre">map.minimization</span> <span class="pre">=</span> <span class="pre">True;</span> <span class="pre">map.explicit</span> <span class="pre">=</span>
+<span class="pre">False</span></tt>.  You can also enable implicit defaults on a per-route basis by setting
+<tt class="docutils literal"><span class="pre">map.explicit</span> <span class="pre">=</span> <span class="pre">True</span></tt> and defining each route with a keyword argument <tt class="docutils literal"><span class="pre">explicit=False</span></tt>.</p>
+<p>Previous versions also had implicit default values for &#8220;controller&#8221;,
+&#8220;action&#8221;, and &#8220;id&#8221;.  These are now disabled by default, but can be enabled via
+<tt class="docutils literal"><span class="pre">map.explicit</span> <span class="pre">=</span> <span class="pre">True</span></tt>.  This also enables route memory</p>
+</div>
+<div class="section" id="url-for">
+<h3>url_for()<a class="headerlink" href="#url-for" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">url_for</span></tt> was a route generation function which was replaced by the <tt class="docutils literal"><span class="pre">url</span></tt>
+object.  Usage is the same except that <tt class="docutils literal"><span class="pre">url_for</span></tt> uses route memory in some
+cases and <tt class="docutils literal"><span class="pre">url</span></tt> never does.  Route memory is where variables from the current
+URL (the current request) are injected into the generated URL.  To use route
+memory with <tt class="docutils literal"><span class="pre">url</span></tt>, call <tt class="docutils literal"><span class="pre">url.current()</span></tt> passing the variables you want to
+override.  Any other variables needed by the route will be taken from the
+current routing variables.</p>
+<p>In other words, <tt class="docutils literal"><span class="pre">url_for</span></tt> combines <tt class="docutils literal"><span class="pre">url</span></tt> and <tt class="docutils literal"><span class="pre">url.current()</span></tt> into one
+function.  The location of <tt class="docutils literal"><span class="pre">url_for</span></tt> is also different.  <tt class="docutils literal"><span class="pre">url_for</span></tt> is
+properly imported from <tt class="docutils literal"><span class="pre">routes</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">routes</span> <span class="kn">import</span> <span class="n">url_for</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">url_for</span></tt> was traditionally imported into WebHelpers, and it&#8217;s still used in
+some tests and in <tt class="docutils literal"><span class="pre">webhelpers.paginate</span></tt>.  Many old Pylons applications
+contain <tt class="docutils literal"><span class="pre">h.url_for()</span></tt> based on its traditional importation to helpers.py.
+However, its use in new applications is discouraged both because of its
+ambiguous syntax and because its implementation depends on an ugly singleton.</p>
+<p>The <tt class="docutils literal"><span class="pre">url</span></tt> object is created by the RoutesMiddleware and inserted into the
+WSGI environment.  Pylons makes it available as <tt class="docutils literal"><span class="pre">pylons.url</span></tt>, and in
+templates as <tt class="docutils literal"><span class="pre">url</span></tt>.</p>
+</div>
+<div class="section" id="redirect-to">
+<h3>redirect_to()<a class="headerlink" href="#redirect-to" title="Permalink to this headline">¶</a></h3>
+<p>This combined <tt class="docutils literal"><span class="pre">url_for</span></tt> with a redirect.  Instead, please use your
+framework&#8217;s redirect mechanism with a <tt class="docutils literal"><span class="pre">url</span></tt> call.  For instance in Pylons:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pylons.controllers.util</span> <span class="kn">import</span> <span class="n">redirect</span>
+<span class="n">redirect</span><span class="p">(</span><span class="n">url</span><span class="p">(</span><span class="s">&quot;login&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="contents.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">Unicode, Redirects, and More</a><ul>
+<li><a class="reference external" href="#unicode">Unicode</a></li>
+<li><a class="reference external" href="#redirect-routes">Redirect Routes</a></li>
+<li><a class="reference external" href="#printing">Printing</a></li>
+<li><a class="reference external" href="#introspection">Introspection</a></li>
+<li><a class="reference external" href="#other">Other</a></li>
+<li><a class="reference external" href="#backward-compatibility">Backward compatibility</a><ul>
+<li><a class="reference external" href="#omitting-the-name-arg">Omitting the name arg</a></li>
+<li><a class="reference external" href="#varname">:varname</a></li>
+<li><a class="reference external" href="#minimization">Minimization</a></li>
+<li><a class="reference external" href="#implicit-defaults-and-route-memory">Implicit defaults and route memory</a></li>
+<li><a class="reference external" href="#url-for">url_for()</a></li>
+<li><a class="reference external" href="#redirect-to">redirect_to()</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="restful.html"
+                                  title="previous chapter">RESTful services</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="glossary.html"
+                                  title="next chapter">Glossary</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/uni_redirect_rest.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="glossary.html" title="Glossary"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="restful.html" title="RESTful services"
+             >previous</a> |</li>
+        <li><a href="index.html">Routes home</a>&nbsp;|&nbsp;</li>
+        <li><a href="contents.html">Documentation</a>&raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Ben Bangert, Mike Orr.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+    </div>
+  </body>
+</html>

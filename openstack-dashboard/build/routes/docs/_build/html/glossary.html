@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Glossary &mdash; Routes v1.12.1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '#',
+        VERSION:     '1.12.1',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Routes v1.12.1 documentation"
+          href="_static/opensearch.xml"/>
+    <link rel="top" title="Routes v1.12.1 documentation" href="index.html" />
+    <link rel="next" title="Porting Routes to a WSGI Web Framework" href="porting.html" />
+    <link rel="prev" title="Unicode, Redirects, and More" href="uni_redirect_rest.html" /> 
+  </head>
+  <body>
+<div style="color: #D1361B; font-size: 70px; font-weight: bold; padding: 10px 0 0 10px;">Routes</div>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="porting.html" title="Porting Routes to a WSGI Web Framework"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="uni_redirect_rest.html" title="Unicode, Redirects, and More"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Routes home</a>&nbsp;|&nbsp;</li>
+        <li><a href="contents.html">Documentation</a>&raquo;</li>
+ 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="glossary">
+<span id="id1"></span><h1>Glossary<a class="headerlink" href="#glossary" title="Permalink to this headline">¶</a></h1>
+<dl class="glossary docutils">
+<dt id="term-component">component</dt>
+<dd>A part of a URL delimited by slashes.  The URL &#8220;/help/about&#8221; contains
+two components: &#8220;help&#8221; and &#8220;about&#8221;.</dd>
+<dt id="term-generation">generation</dt>
+<dd>The act of creating a URL based on a route name and/or variable values.
+This is the opposite of matching.  Finding a route by name is called
+<em>named generation</em>.  Finding a route without specifying a name is
+called <em>nameless generation</em>.</dd>
+<dt id="term-mapper">mapper</dt>
+<dd>A container for routes.  There is normally one mapper per application,
+although nested subapplications might have their own mappers.  A
+mapper knows how to match routes and generate them.</dd>
+<dt id="term-matching">matching</dt>
+<dd>The act of matching a given URL against a list  of routes, and
+returning the routing variables.  See the <em>route</em> entry for an example.</dd>
+<dt id="term-minimization">minimization</dt>
+<dd>A deprecated feature which allowed short URLs to match long paths.
+Details are in the <tt class="docutils literal"><span class="pre">Backward</span> <span class="pre">Compatibility</span></tt> section in the manual.</dd>
+<dt id="term-route">route</dt>
+<dd><p class="first">A rule mapping a URL pattern to a dict of routing  variables.   For
+instance, if the pattern is &#8220;/{controller}/{action}&#8221; and the requested
+URL is &#8220;/help/about&#8221;, the resulting dict would be:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&quot;controller&quot;</span><span class="p">:</span> <span class="s">&quot;help&quot;</span><span class="p">,</span> <span class="s">&quot;action&quot;</span><span class="p">:</span> <span class="s">&quot;about&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Routes does not know what these variables mean; it simply returns them
+to the application.  Pylons would look for a <tt class="docutils literal"><span class="pre">controllers/help.py</span></tt>
+module containing a <tt class="docutils literal"><span class="pre">HelpController</span></tt> class, and call its <tt class="docutils literal"><span class="pre">about</span></tt>
+method.  Other frameworks may do something different.</p>
+<p class="last">A route may have a name, used to identify the route.</p>
+</dd>
+<dt id="term-route-path">route path</dt>
+<dd>The URL pattern in a route.</dd>
+<dt id="term-routing-variables">routing variables</dt>
+<dd><p class="first">A dict of key-value pairs returned by matching.  Variables defined in
+the route path are called <em>path variables</em>; their values will be taken
+from the URL.  Variables defined outside the route path are called
+<em>default variables</em>; their values are not affected by the URL.</p>
+<p class="last">The WSGI.org environment key for routing variables is
+&#8220;wsgiorg.routing_args&#8221;.  This manual does not use that term because it
+can be confused with function arguments.</p>
+</dd>
+</dl>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="uni_redirect_rest.html"
+                                  title="previous chapter">Unicode, Redirects, and More</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="porting.html"
+                                  title="next chapter">Porting Routes to a WSGI Web Framework</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/glossary.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="porting.html" title="Porting Routes to a WSGI Web Framework"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="uni_redirect_rest.html" title="Unicode, Redirects, and More"
+             >previous</a> |</li>
+        <li><a href="index.html">Routes home</a>&nbsp;|&nbsp;</li>
+        <li><a href="contents.html">Documentation</a>&raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Ben Bangert, Mike Orr.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+    </div>
+  </body>
+</html>

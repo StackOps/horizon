@@ -1,0 +1,237 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>routes.route – Route &mdash; Routes v1.12.1 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.12.1',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Routes v1.12.1 documentation"
+          href="../_static/opensearch.xml"/>
+    <link rel="top" title="Routes v1.12.1 documentation" href="../index.html" />
+    <link rel="up" title="Routes Modules" href="index.html" />
+    <link rel="next" title="routes.middleware – Routes WSGI Middleware" href="middleware.html" />
+    <link rel="prev" title="routes.mapper – Mapper and Sub-Mapper" href="mapper.html" /> 
+  </head>
+  <body>
+<div style="color: #D1361B; font-size: 70px; font-weight: bold; padding: 10px 0 0 10px;">Routes</div>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="middleware.html" title="routes.middleware – Routes WSGI Middleware"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="mapper.html" title="routes.mapper – Mapper and Sub-Mapper"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Routes home</a>&nbsp;|&nbsp;</li>
+        <li><a href="../contents.html">Documentation</a>&raquo;</li>
+
+          <li><a href="index.html" accesskey="U">Routes Modules</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-routes.route">
+<h1><tt class="xref docutils literal"><span class="pre">routes.route</span></tt> &#8211; Route<a class="headerlink" href="#module-routes.route" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="routes.route.Route">
+<em class="property">class </em><tt class="descclassname">routes.route.</tt><tt class="descname">Route</tt><big>(</big><em>name</em>, <em>routepath</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#routes.route.Route" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Route object holds a route recognition and generation
+routine.</p>
+<p>See Route.__init__ docs for usage.</p>
+<p>Initialize a route, with a given routepath for
+matching/generation</p>
+<p>The set of keyword args will be used as defaults.</p>
+<p>Usage:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">routes.base</span> <span class="kn">import</span> <span class="n">Route</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">newroute</span> <span class="o">=</span> <span class="n">Route</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="s">&#39;:controller/:action/:id&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">newroute</span><span class="o">.</span><span class="n">defaults</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+<span class="go">[(&#39;action&#39;, &#39;index&#39;), (&#39;id&#39;, None)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">newroute</span> <span class="o">=</span> <span class="n">Route</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="s">&#39;date/:year/:month/:day&#39;</span><span class="p">,</span>  
+<span class="gp">... </span>    <span class="n">controller</span><span class="o">=</span><span class="s">&quot;blog&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;view&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">newroute</span> <span class="o">=</span> <span class="n">Route</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="s">&#39;archives/:page&#39;</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="s">&quot;blog&quot;</span><span class="p">,</span> 
+<span class="gp">... </span>    <span class="n">action</span><span class="o">=</span><span class="s">&quot;by_page&quot;</span><span class="p">,</span> <span class="n">requirements</span> <span class="o">=</span> <span class="p">{</span> <span class="s">&#39;page&#39;</span><span class="p">:</span><span class="s">&#39;\d{1,2}&#39;</span> <span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">newroute</span><span class="o">.</span><span class="n">reqs</span>
+<span class="go">{&#39;page&#39;: &#39;\\d{1,2}&#39;}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Route is generally not called directly, a Mapper instance
+connect method should be used to add routes.</p>
+</div>
+<dl class="method">
+<dt id="routes.route.Route.buildfullreg">
+<tt class="descname">buildfullreg</tt><big>(</big><em>clist</em>, <em>include_names=True</em><big>)</big><a class="headerlink" href="#routes.route.Route.buildfullreg" title="Permalink to this definition">¶</a></dt>
+<dd>Build the regexp by iterating through the routelist and
+replacing dicts with the appropriate regexp match</dd></dl>
+
+<dl class="method">
+<dt id="routes.route.Route.buildnextreg">
+<tt class="descname">buildnextreg</tt><big>(</big><em>path</em>, <em>clist</em>, <em>include_names=True</em><big>)</big><a class="headerlink" href="#routes.route.Route.buildnextreg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursively build our regexp given a path, and a controller
+list.</p>
+<p>Returns the regular expression string, and two booleans that
+can be ignored as they&#8217;re only used internally by buildnextreg.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="routes.route.Route.generate">
+<tt class="descname">generate</tt><big>(</big><em>_ignore_req_list=False</em>, <em>_append_slash=False</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#routes.route.Route.generate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a URL from ourself given a set of keyword arguments</p>
+<p>Toss an exception if this
+set of keywords would cause a gap in the url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="routes.route.Route.generate_minimized">
+<tt class="descname">generate_minimized</tt><big>(</big><em>kargs</em><big>)</big><a class="headerlink" href="#routes.route.Route.generate_minimized" title="Permalink to this definition">¶</a></dt>
+<dd>Generate a minimized version of the URL</dd></dl>
+
+<dl class="method">
+<dt id="routes.route.Route.generate_non_minimized">
+<tt class="descname">generate_non_minimized</tt><big>(</big><em>kargs</em><big>)</big><a class="headerlink" href="#routes.route.Route.generate_non_minimized" title="Permalink to this definition">¶</a></dt>
+<dd>Generate a non-minimal version of the URL</dd></dl>
+
+<dl class="method">
+<dt id="routes.route.Route.make_full_route">
+<tt class="descname">make_full_route</tt><big>(</big><big>)</big><a class="headerlink" href="#routes.route.Route.make_full_route" title="Permalink to this definition">¶</a></dt>
+<dd>Make a full routelist string for use with non-minimized
+generation</dd></dl>
+
+<dl class="method">
+<dt id="routes.route.Route.make_unicode">
+<tt class="descname">make_unicode</tt><big>(</big><em>s</em><big>)</big><a class="headerlink" href="#routes.route.Route.make_unicode" title="Permalink to this definition">¶</a></dt>
+<dd>Transform the given argument into a unicode string.</dd></dl>
+
+<dl class="method">
+<dt id="routes.route.Route.makeregexp">
+<tt class="descname">makeregexp</tt><big>(</big><em>clist</em>, <em>include_names=True</em><big>)</big><a class="headerlink" href="#routes.route.Route.makeregexp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a regular expression for matching purposes</p>
+<p>Note: This MUST be called before match can function properly.</p>
+<p>clist should be a list of valid controller strings that can be 
+matched, for this reason makeregexp should be called by the web
+framework after it knows all available controllers that can be
+utilized.</p>
+<p>include_names indicates whether this should be a match regexp
+assigned to itself using regexp grouping names, or if names
+should be excluded for use in a single larger regexp to
+determine if any routes match</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="routes.route.Route.match">
+<tt class="descname">match</tt><big>(</big><em>url</em>, <em>environ=None</em>, <em>sub_domains=False</em>, <em>sub_domains_ignore=None</em>, <em>domain_match=''</em><big>)</big><a class="headerlink" href="#routes.route.Route.match" title="Permalink to this definition">¶</a></dt>
+<dd><p>Match a url to our regexp.</p>
+<p>While the regexp might match, this operation isn&#8217;t
+guaranteed as there&#8217;s other factors that can cause a match to
+fail even though the regexp succeeds (Default that was relied
+on wasn&#8217;t given, requirement regexp doesn&#8217;t pass, etc.).</p>
+<p>Therefore the calling function shouldn&#8217;t assume this will
+return a valid dict, the other possible return is False if a
+match doesn&#8217;t work out.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../contents.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#"><tt class="docutils literal"><span class="pre">routes.route</span></tt> &#8211; Route</a><ul>
+<li><a class="reference external" href="#module-contents">Module Contents</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="mapper.html"
+                                  title="previous chapter"><tt class="docutils literal docutils literal"><span class="pre">routes.mapper</span></tt> &#8211; Mapper and Sub-Mapper</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="middleware.html"
+                                  title="next chapter"><tt class="docutils literal docutils literal docutils literal"><span class="pre">routes.middleware</span></tt> &#8211; Routes WSGI Middleware</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/modules/route.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="middleware.html" title="routes.middleware – Routes WSGI Middleware"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="mapper.html" title="routes.mapper – Mapper and Sub-Mapper"
+             >previous</a> |</li>
+        <li><a href="../index.html">Routes home</a>&nbsp;|&nbsp;</li>
+        <li><a href="../contents.html">Documentation</a>&raquo;</li>
+
+          <li><a href="index.html" >Routes Modules</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Ben Bangert, Mike Orr.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+    </div>
+  </body>
+</html>

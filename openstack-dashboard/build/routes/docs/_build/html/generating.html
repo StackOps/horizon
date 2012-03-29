@@ -1,0 +1,311 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Generation &mdash; Routes v1.12.1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '#',
+        VERSION:     '1.12.1',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Routes v1.12.1 documentation"
+          href="_static/opensearch.xml"/>
+    <link rel="top" title="Routes v1.12.1 documentation" href="index.html" />
+    <link rel="next" title="RESTful services" href="restful.html" />
+    <link rel="prev" title="Setting up routes" href="setting_up.html" /> 
+  </head>
+  <body>
+<div style="color: #D1361B; font-size: 70px; font-weight: bold; padding: 10px 0 0 10px;">Routes</div>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="restful.html" title="RESTful services"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="setting_up.html" title="Setting up routes"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Routes home</a>&nbsp;|&nbsp;</li>
+        <li><a href="contents.html">Documentation</a>&raquo;</li>
+ 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="generation">
+<h1>Generation<a class="headerlink" href="#generation" title="Permalink to this headline">¶</a></h1>
+<p>To generate URLs, use the <tt class="docutils literal"><span class="pre">url</span></tt> or <tt class="docutils literal"><span class="pre">url_for</span></tt> object provided by your
+framework.  <tt class="docutils literal"><span class="pre">url</span></tt> is an instance of Routes <tt class="docutils literal"><span class="pre">URLGenerator</span></tt>, while
+<tt class="docutils literal"><span class="pre">url_for</span></tt> is the older <tt class="docutils literal"><span class="pre">routes.url_for()</span></tt> function.  <tt class="docutils literal"><span class="pre">url_for</span></tt> is being
+phased out, so new applications should use <tt class="docutils literal"><span class="pre">url</span></tt>.</p>
+<p>To generate a named route, specify the route name as a positional argument:</p>
+<div class="highlight-python"><pre>url("home")   =&gt;  "/"</pre>
+</div>
+<p>If the route contains path variables, you must specify values for them using
+keyword arguments:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">url</span><span class="p">(</span><span class="s">&quot;blog&quot;</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="mi">2008</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Non-string values are automatically converted to strings using <tt class="docutils literal"><span class="pre">str()</span></tt>.
+(This may break with Unicode values containing non-ASCII characters.)</p>
+<p>However, if the route defines an extra variable with the same name as a path
+variable, the extra variable is used as the default if that keyword is not
+specified.  Example:</p>
+<div class="highlight-python"><pre>m.connect("archives", "/archives/{id}",
+    controller="archives", action="view", id=1)
+url("blog", id=123)  =&gt;  "/blog/123"
+url("blog")  =&gt;  "/blog/1"</pre>
+</div>
+<p>(The extra variable is <em>not</em> used for matching unless minimization is enabled.)</p>
+<p>Any keyword args that do not correspond to path variables will be put in the
+query string.  Append a &#8220;_&#8221; if the variable name collides with a Python
+keyword:</p>
+<div class="highlight-python"><pre>map.connect("archive", "/archive/{year}")
+url("archive", year=2009, font=large)  =&gt;  "/archive/2009?font=large"
+url("archive", year=2009, print_=1)  =&gt;  "/archive/2009?print=1"</pre>
+</div>
+<p>If the application is mounted at a subdirectory of the URL space,
+all generated URLs will have the application prefix.  The application prefix is
+the &#8220;SCRIPT_NAME&#8221; variable in the request&#8217;s WSGI environment.</p>
+<p>If the positional argument corresponds to no named route, it is assumed to be a
+literal URL.  The application&#8217;s mount point is prefixed to it, and keyword args
+are converted to query parameters:</p>
+<div class="highlight-python"><pre>url("/search", q="My question")  =&gt;  "/search?q=My+question"</pre>
+</div>
+<p>If there is no positional argument, Routes will use the keyword args to choose
+a route.  The first route that has all path variables specified by keyword args
+and the fewest number of extra variables not overridden by keyword args will be
+chosen.  This was common in older versions of Routes but can cause application
+bugs if an unexpected route is chosen, so using route names is much preferable
+because that guarantees only the named route will be chosen.  The most common
+use for unnamed generation is when you have a seldom-used controller with a lot
+of ad hoc methods; e.g., <tt class="docutils literal"><span class="pre">url(controller=&quot;admin&quot;,</span> <span class="pre">action=&quot;session&quot;)</span></tt>.</p>
+<p>An exception is raised if no route corresponds to the arguments.  The exception
+is <tt class="docutils literal"><span class="pre">routes.util.GenerationException</span></tt>.  (Prior to Routes 1.9, <tt class="xref docutils literal"><span class="pre">None</span></tt> was
+returned instead.  It was changed to an exception to prevent invalid blank URLs
+from being insered into templates.)</p>
+<p>You&#8217;ll also get this exception if Python produces a Unicode URL (which could
+happen if the route path or a variable value is Unicode).  Routes generates
+only <tt class="docutils literal"><span class="pre">str</span></tt> URLs.</p>
+<p>The following keyword args are special:</p>
+<blockquote>
+<p>anchor</p>
+<blockquote>
+<p>Specifies the URL anchor (the part to the right of &#8220;#&#8221;).</p>
+<div class="highlight-python"><pre>url("home", "summary")  =&gt;  "/#summary"</pre>
+</div>
+</blockquote>
+<p>host</p>
+<blockquote>
+Make the URL fully qualified and override the host (domain).</blockquote>
+<p>protocol</p>
+<blockquote>
+Make the URL fully qualified and override the protocol (e.g., &#8220;ftp&#8221;).</blockquote>
+<p>qualified</p>
+<blockquote>
+Make the URL fully qualified (i.e., add &#8220;protocol://host:port&#8221; prefix).</blockquote>
+<p>sub_domain</p>
+<blockquote>
+See &#8220;Generating URLs with subdomains&#8221; below.</blockquote>
+</blockquote>
+<p>The syntax in this section is the same for both <tt class="docutils literal"><span class="pre">url</span></tt> and <tt class="docutils literal"><span class="pre">url_for</span></tt>.</p>
+<p><em>New in Routes 1.10: ``url`` and the ``URLGenerator`` class behind it.</em></p>
+<div class="section" id="generating-routes-based-on-the-current-url">
+<h2>Generating routes based on the current URL<a class="headerlink" href="#generating-routes-based-on-the-current-url" title="Permalink to this headline">¶</a></h2>
+<p><tt class="docutils literal"><span class="pre">url.current()</span></tt> returns the URL of the current request, without the query
+string.  This is called &#8220;route memory&#8221;, and works only if the RoutesMiddleware
+is in the middleware stack.  Keyword arguments override path variables or are
+put on the query string.</p>
+<p><tt class="docutils literal"><span class="pre">url_for</span></tt> combines the behavior of <tt class="docutils literal"><span class="pre">url</span></tt> and <tt class="docutils literal"><span class="pre">url_current</span></tt>.  This is
+deprecated because nameless routes and route memory have the same syntax, which
+can lead to the wrong route being chosen in some cases.</p>
+<p>Here&#8217;s an example of route memory:</p>
+<div class="highlight-python"><pre>m.connect("/archives/{year}/{month}/{day}", year=2004)
+
+# Current URL is "/archives/2005/10/4".
+# Routing variables are {"controller": "archives", "action": "view",
+  "year": "2005", "month": "10", "day": "4"}
+
+url.current(day=6)    =&gt;  "/archives/2005/10/6"
+url.current(month=4)  =&gt;  "/archives/2005/4/4"
+url.current()         =&gt;  "/archives/2005/10/4"</pre>
+</div>
+<p>Route memory can be disabled globally with <tt class="docutils literal"><span class="pre">map.explicit</span> <span class="pre">=</span> <span class="pre">True</span></tt>.</p>
+</div>
+<div class="section" id="generation-only-routes-aka-static-routes">
+<h2>Generation-only routes (aka. static routes)<a class="headerlink" href="#generation-only-routes-aka-static-routes" title="Permalink to this headline">¶</a></h2>
+<p>A static route is used only for generation &#8211; not matching &#8211; and it must be
+named.  To define a static route, use the argument <tt class="docutils literal"><span class="pre">_static=True</span></tt>.</p>
+<p>This example provides a convenient way to link to a search:</p>
+<div class="highlight-python"><pre>map.connect("google", "http://google.com/", _static=True)
+url("google", q="search term")  =&gt;  "/http://google.com/?q=search+term")</pre>
+</div>
+<p>This example generates a URL to a static image in a Pylons public directory.
+Pylons serves the public directory in a way that bypasses Routes, so there&#8217;s no
+reason to match URLs under it.</p>
+<div class="highlight-python"><pre>map.connect("attachment", "/images/attachments/{category}/{id}.jpg",
+    _static=True)
+url("attachment", category="dogs", id="Mastiff") =&gt;
+    "/images/attachments/dogs/Mastiff.jpg"</pre>
+</div>
+<p>Starting in Routes 1.10, static routes are exactly the same as regular routes
+except they&#8217;re not added to the internal match table.  In previous versions of
+Routes they could not contain path variables and they had to point to external
+URLs.</p>
+</div>
+<div class="section" id="filter-functions">
+<h2>Filter functions<a class="headerlink" href="#filter-functions" title="Permalink to this headline">¶</a></h2>
+<p>A filter function modifies how a named route is generated.  Don&#8217;t confuse it
+with a function condition, which is used in matching.  A filter function is its
+opposite counterpart.</p>
+<p>One use case is when you have a <tt class="docutils literal"><span class="pre">story</span></tt> object with attributes for year,
+month, and day.  You don&#8217;t want to hardcode these attributes in every <tt class="docutils literal"><span class="pre">url</span></tt>
+call because the interface may change someday.  Instead you pass the story as a
+pseudo-argument, and the filter produces the actual generation args.  Here&#8217;s an
+example:</p>
+<div class="highlight-python"><pre>class Story(object):
+    def __init__(self, year, month, day):
+        self.year = year
+        self.month = month
+        self.day = day
+
+    @staticmethod
+    def expand(kw):
+        try:
+            story = kw["story"]
+        except KeyError:
+            pass   # Don't modify dict if ``story`` key not present.
+        else:
+            # Set the actual generation args from the story.
+            kw["year"] = story.year
+            kw["month"] = story.month
+            kw["day"] = story.day
+        return kw
+
+m.connect("archives", "/archives/{year}/{month}/{day}",
+    controller="archives", action="view", _filter=Story.expand)
+
+my_story = Story(2009, 1, 2)
+url("archives", story=my_story)  =&gt;  "/archives/2009/1/2"</pre>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">_filter</span></tt> argument can be any function that takes a dict and returns a
+dict.  In the example we&#8217;ve used a static method of the <tt class="docutils literal"><span class="pre">Story</span></tt> class to keep
+everything story-related together, but you may prefer to use a standalone
+function to keep Routes-related code away from your model.</p>
+</div>
+<div class="section" id="generating-urls-with-subdomains">
+<h2>Generating URLs with subdomains<a class="headerlink" href="#generating-urls-with-subdomains" title="Permalink to this headline">¶</a></h2>
+<p>If subdomain support is enabled and the <tt class="docutils literal"><span class="pre">sub_domain</span></tt> arg is passed to
+<tt class="docutils literal"><span class="pre">url_for</span></tt>, Routes ensures the generated route points to that subdomain.</p>
+<div class="highlight-python"><pre># Enable subdomain support.
+map.sub_domains = True
+
+# Ignore the www subdomain.
+map.sub_domains_ignore = "www"
+
+map.connect("/users/{action}")
+
+# Add a subdomain.
+url_for(action="update", sub_domain="fred")  =&gt;  "http://fred.example.com/users/update"
+
+# Delete a subdomain.  Assume current URL is fred.example.com.
+url_for(action="new", sub_domain=None)  =&gt;  "http://example.com/users/new"</pre>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="contents.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">Generation</a><ul>
+<li><a class="reference external" href="#generating-routes-based-on-the-current-url">Generating routes based on the current URL</a></li>
+<li><a class="reference external" href="#generation-only-routes-aka-static-routes">Generation-only routes (aka. static routes)</a></li>
+<li><a class="reference external" href="#filter-functions">Filter functions</a></li>
+<li><a class="reference external" href="#generating-urls-with-subdomains">Generating URLs with subdomains</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="setting_up.html"
+                                  title="previous chapter">Setting up routes</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="restful.html"
+                                  title="next chapter">RESTful services</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/generating.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="restful.html" title="RESTful services"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="setting_up.html" title="Setting up routes"
+             >previous</a> |</li>
+        <li><a href="index.html">Routes home</a>&nbsp;|&nbsp;</li>
+        <li><a href="contents.html">Documentation</a>&raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Ben Bangert, Mike Orr.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+    </div>
+  </body>
+</html>

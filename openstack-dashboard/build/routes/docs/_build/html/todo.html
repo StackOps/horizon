@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Routes TODO &mdash; Routes v1.12.1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '#',
+        VERSION:     '1.12.1',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Routes v1.12.1 documentation"
+          href="_static/opensearch.xml"/>
+    <link rel="top" title="Routes v1.12.1 documentation" href="index.html" /> 
+  </head>
+  <body>
+<div style="color: #D1361B; font-size: 70px; font-weight: bold; padding: 10px 0 0 10px;">Routes</div>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li><a href="index.html">Routes home</a>&nbsp;|&nbsp;</li>
+        <li><a href="contents.html">Documentation</a>&raquo;</li>
+ 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="routes-todo">
+<span id="todo"></span><h1>Routes TODO<a class="headerlink" href="#routes-todo" title="Permalink to this headline">¶</a></h1>
+<p><em>Updated 2009-09-07</em></p>
+<div class="section" id="planned-changes">
+<h2>Planned changes<a class="headerlink" href="#planned-changes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="refactoring">
+<h3>Refactoring<a class="headerlink" href="#refactoring" title="Permalink to this headline">¶</a></h3>
+<p>Backport the <tt class="docutils literal"><span class="pre">Route</span></tt> and <tt class="docutils literal"><span class="pre">Mapper</span></tt> refactorings from Routes-experimental
+(formerly called Routes 2).  Make the objects more introspection-friendly.
+Add a generation dict for named routes; this will help both efficiency and
+introspection.</p>
+</div>
+<div class="section" id="generating-the-current-url-with-a-modified-query-string">
+<h3>Generating the current URL with a modified query string<a class="headerlink" href="#generating-the-current-url-with-a-modified-query-string" title="Permalink to this headline">¶</a></h3>
+<p>When <tt class="docutils literal"><span class="pre">url.current()</span></tt> generates the current URL, it omits the existing query
+string.  Any keyword args passed override path variables or set new query
+parameters.  Extracting the existing query string from the request is tedious,
+especially if you want to modify some parameters.</p>
+<p>A new method <tt class="docutils literal"><span class="pre">url.current_with_query()</span></tt> will generate the current URL with
+its query string.  Any keyword args add or override query parameters.  An
+argument with a value <tt class="xref docutils literal"><span class="pre">None</span></tt> deletes that parameter if it exists, so that it
+will not be in the generated URL.  There will be no way to change path
+variables in the URL.</p>
+<p>Positional arguments will be appended to the URL path using urljoin.</p>
+<p>Options for generating a fully-qualified URL will be retained.  The option
+<tt class="docutils literal"><span class="pre">_fragment</span></tt> specifies a URL fragment (&#8220;#fragment&#8221;).</p>
+</div>
+<div class="section" id="failure-routes">
+<h3>Failure routes<a class="headerlink" href="#failure-routes" title="Permalink to this headline">¶</a></h3>
+<p>A method <tt class="docutils literal"><span class="pre">fail</span></tt> for causing 4xx and 5xx errors.  This is akin to
+<tt class="docutils literal"><span class="pre">.redirect</span></tt> for 3xx errors.</p>
+<p>A convenience method <tt class="docutils literal"><span class="pre">gone</span></tt> may also be added for 410 errors.  This indicates
+that the URL has been deleted and should be removed from bookmarks and
+search engines.  These will be called &#8220;gone routes&#8221;.</p>
+</div>
+<div class="section" id="chaining-to-wsgi-applications">
+<h3>Chaining to WSGI applications<a class="headerlink" href="#chaining-to-wsgi-applications" title="Permalink to this headline">¶</a></h3>
+<p>A connect argument <tt class="docutils literal"><span class="pre">wsgi_app</span></tt> for chaining to another WSGI application.
+This would allow a Pylons app to chain to other applications directly in the
+route map rather than having to create dummy controllers for them.</p>
+<p>Users would have to put &#8220;{path_info:.*}&#8221; at the end of the path to indicate
+which part of the URL should be passed to the application.  This raises
+multiple issues:</p>
+<blockquote>
+<ul class="simple">
+<li>Users would prefer to specify a URL prefix rather than a URL with a
+path_info variable.  But this is incompatible with Routes matching.
+One could create a special kind of route with a different method, such
+as <tt class="docutils literal"><span class="pre">map.chain</span></tt>, but that would raise as many issues as it solves,
+such as the need to duplicate all the route options in the second method.</li>
+<li>What about the sub-application&#8217;s home page?  I.e., PATH_INFO=/ .  This
+can be handled by changing an empty path_info variable to &#8220;/&#8221;, but what
+if the route does not want a path_info variable in the path?</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="new-route-creation-method">
+<h3>New route creation method<a class="headerlink" href="#new-route-creation-method" title="Permalink to this headline">¶</a></h3>
+<p>Add a new mapper method <tt class="docutils literal"><span class="pre">add</span></tt> with a stricter syntax for creating routes.
+(The existing <tt class="docutils literal"><span class="pre">connect</span></tt> method will remain at least in all 1.x versions.)</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">map</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">variables</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">requirements</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">if_match</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">if_function</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">if_subdomain</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">if_method</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">generate_filter</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The first argument, <tt class="docutils literal"><span class="pre">name</span></tt> is required.  It should be a string name, or
+<tt class="xref docutils literal"><span class="pre">None</span></tt> for unnamed routes.
+(This syntax is also allowed by <tt class="docutils literal"><span class="pre">connect</span></tt> for forward compatibility.)
+This eliminates the &#8220;moving argument&#8221; situation where the <tt class="docutils literal"><span class="pre">path</span></tt> argument
+changes position depending on whether a name is specified.  This will make it
+easier to read a list of route definitions aligned vertically, encourage named
+routes, and make unnamed routes obvious.</p>
+<p>The second argument, <tt class="docutils literal"><span class="pre">path</span></tt>, is unchanged.</p>
+<p>The third argument, <tt class="docutils literal"><span class="pre">variables</span></tt>, is for extra variables.  These will be
+passed as a dict rather than as keyword args.  This will make a clear
+distinction between variables and route options, and allow options to have more
+intuitive names without risk of collision, and without leading underscores.
+New applications can use either the <tt class="docutils literal"><span class="pre">{}</span></tt> or <tt class="docutils literal"><span class="pre">dict()</span></tt> syntax; old
+applications can simply put <tt class="docutils literal"><span class="pre">dict()</span></tt> around existing keyword args.  If no
+extra variables are required you can pass an empty dict, <tt class="xref docutils literal"><span class="pre">None</span></tt>, or omit the
+argument.</p>
+<p>The fourth argument, <tt class="docutils literal"><span class="pre">match</span></tt>, is true if the route is for both matching and
+generation, or false for generation only.  The default is true.  Whea
+converting from <tt class="docutils literal"><span class="pre">connect</span></tt>, change <tt class="docutils literal"><span class="pre">_static=True</span></tt> to <tt class="docutils literal"><span class="pre">match=False</span></tt>.</p>
+<p>The remaining options should be set only via keyword arguments because their
+positions might change.</p>
+<p>The <tt class="docutils literal"><span class="pre">requirements</span></tt> option is unchanged.</p>
+<p><tt class="docutils literal"><span class="pre">if_function</span></tt> corresponds to the <tt class="docutils literal"><span class="pre">function</span></tt> condition in <tt class="docutils literal"><span class="pre">connect</span></tt>.  The
+value is unchanged.</p>
+<p><tt class="docutils literal"><span class="pre">if_subdomain</span></tt> corresponds to the <tt class="docutils literal"><span class="pre">subdomain</span></tt> condition in <tt class="docutils literal"><span class="pre">connect</span></tt>.
+The value is unchanged.</p>
+<p><tt class="docutils literal"><span class="pre">if_method</span></tt> corresponds to the <tt class="docutils literal"><span class="pre">method</span></tt> condition in <tt class="docutils literal"><span class="pre">connect</span></tt>.  The
+value is unchanged.</p>
+<p><tt class="docutils literal"><span class="pre">generate_filter</span></tt> corresponds to the <tt class="docutils literal"><span class="pre">filter</span></tt> argument to <tt class="docutils literal"><span class="pre">connect</span></tt>.
+The value is unchanged.</p>
+<p>One problem is that users might expect this syntax in the <tt class="docutils literal"><span class="pre">redirect</span></tt> method
+(and <tt class="docutils literal"><span class="pre">fail</span></tt> when it&#8217;s added), but <tt class="docutils literal"><span class="pre">redirect</span></tt> can&#8217;t be changed due to
+backward compatibility.  Although some of these options may not make sense for
+redirect and failure routes anyway.  <tt class="docutils literal"><span class="pre">fail</span></tt> is not so much an issue because
+it doesn&#8217;t exist yet, so it doesn&#8217;t matter if it&#8217;s added with the new syntax.</p>
+</div>
+<div class="section" id="resource-routes">
+<h3>Resource routes<a class="headerlink" href="#resource-routes" title="Permalink to this headline">¶</a></h3>
+<p>Add a second kind of resource route with the traditional add-modify-delete
+paradigm using only GET and POST, where each GET URL displays a form and the
+same POST URL processes it.  This is non-RESTful but useful in interactive
+applications that don&#8217;t really need the other methods, and avoids doubling up
+dissimilar behavior onto the same URL.  The method should also have <tt class="docutils literal"><span class="pre">add=True,</span>
+<span class="pre">edit=True,</span> <span class="pre">delete=True</span></tt> arguments to disable services which will not be
+implemented (e.g., resources that can&#8217;t be deleted, or are added outside the
+web interface).  This would be under a different method, hopefully called
+something better than <tt class="docutils literal"><span class="pre">.resource2</span></tt>.</p>
+</div>
+<div class="section" id="slimmed-down-package">
+<h3>Slimmed-down package<a class="headerlink" href="#slimmed-down-package" title="Permalink to this headline">¶</a></h3>
+<p>Make a slimmed-down version of Routes without deprecated features.  This can
+be kept as a separate branch or repository, and uploaded to PyPI under Routes
+with a different filename; e.g., Routes-NC.</p>
+</div>
+</div>
+<div class="section" id="under-consideration">
+<h2>Under consideration<a class="headerlink" href="#under-consideration" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="route-group">
+<h3>Route group<a class="headerlink" href="#route-group" title="Permalink to this headline">¶</a></h3>
+<p>When adding a group of routes such as a resource, keep the group identity for
+introspection.  Currently the routes are added individually and lose their
+groupness.  This could be done with a <tt class="docutils literal"><span class="pre">RouteGroup</span></tt> collection in the matchlist
+which delegates to its sub-routes.  This would not apply to named generation,
+which needs a single dict of route names.</p>
+</div>
+<div class="section" id="required-variables">
+<h3>Required variables<a class="headerlink" href="#required-variables" title="Permalink to this headline">¶</a></h3>
+<p>A mapper constructor arg listing the variables all
+routes must have in their path or extra variables.  Defining a route without
+these variables would raise an error.  Intended for &#8220;controller&#8221; and &#8220;action&#8221;
+variables in frameworks like Pylons.  However, there are cases where
+normally-required variables would be omitted, such as chaining to another WSGI
+application (in which case &#8220;controller&#8221; would be necessary but not &#8220;action&#8221;).
+Of course, the route can always define <tt class="docutils literal"><span class="pre">action=None</span></tt>.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="contents.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">Routes TODO</a><ul>
+<li><a class="reference external" href="#planned-changes">Planned changes</a></li>
+<li><a class="reference external" href="#under-consideration">Under consideration</a></li>
+</ul>
+</li>
+</ul>
+
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/todo.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Routes home</a>&nbsp;|&nbsp;</li>
+        <li><a href="contents.html">Documentation</a>&raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Ben Bangert, Mike Orr.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+    </div>
+  </body>
+</html>
