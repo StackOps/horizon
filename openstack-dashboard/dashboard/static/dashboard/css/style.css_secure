@@ -83,20 +83,19 @@ input[type="submit"]:active { background-position: 0 -105px; }
 .clear { clear: both; }
 
 #main a.action_link, #main input.action_input {
-  /*background: #93bc8d;*/
-  background: #EA5358;
+  background: #93bc8d;
   color: #fff;
   font-size: 14px;
   margin: 0 17px 0 0;
   padding: 10px 10px 10px 10px;
-  border: 1px solid #E31C23;
+  border: 1px solid #8eb08a;
   -webkit-transition-property: background;
   -webkit-transition-duration: 0.2s;
   text-shadow: #62935c 0 -1px 0;
 }
 
 #main a.action_link:hover, #main input.action_input:hover {
-  background: #E31C23; 
+  background: #6fa267; 
   text-decoration: none;  
 }
 
@@ -161,7 +160,7 @@ h1 a{
   border-top: 5px solid transparent;
   height: 33px;
 }
-#main_nav li a.active { border-top: 5px solid #EA5358; }
+#main_nav li a.active { border-top: 5px solid #8eacb7; }
 #main_nav li a:hover { background: #dff2fa; }
 
 
@@ -991,11 +990,10 @@ td ul span {
 }
 
 .dash_block .security_group_rule_form_wrapper input[type="submit"]{
-  /*background: #93bc8d;*/
-  background: #EA5358;
+  background: #93bc8d;
   color: #fff;
   margin: 0 17px 0 0;
-  border: 1px solid #E31C23;
+  border: 1px solid #8eb08a;
   -webkit-transition-property: background;
   -webkit-transition-duration: 0.2s;
   text-shadow: #62935c 0 -1px 0;
