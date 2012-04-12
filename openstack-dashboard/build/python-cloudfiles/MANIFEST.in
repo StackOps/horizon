@@ -1,0 +1,9 @@
+include COPYING
+include ChangeLog
+include cloudfiles/*.py
+include COPYING
+graft docs
+include epydoc.conf
+include setup.py
+graft tests
+exclude python_cloudfiles.egg-info

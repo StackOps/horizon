@@ -1,0 +1,247 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>routes.util – URL Generator and utility functions &mdash; Routes v1.12.1 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.12.1',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Routes v1.12.1 documentation"
+          href="../_static/opensearch.xml"/>
+    <link rel="top" title="Routes v1.12.1 documentation" href="../index.html" />
+    <link rel="up" title="Routes Modules" href="index.html" />
+    <link rel="prev" title="routes.lru – LRU caching class and decorator" href="lru.html" /> 
+  </head>
+  <body>
+<div style="color: #D1361B; font-size: 70px; font-weight: bold; padding: 10px 0 0 10px;">Routes</div>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="lru.html" title="routes.lru – LRU caching class and decorator"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Routes home</a>&nbsp;|&nbsp;</li>
+        <li><a href="../contents.html">Documentation</a>&raquo;</li>
+
+          <li><a href="index.html" accesskey="U">Routes Modules</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-routes.util">
+<h1><tt class="xref docutils literal"><span class="pre">routes.util</span></tt> &#8211; URL Generator and utility functions<a class="headerlink" href="#module-routes.util" title="Permalink to this headline">¶</a></h1>
+<p>Utility functions for use in templates / controllers</p>
+<p><em>PLEASE NOTE</em>: Many of these functions expect an initialized RequestConfig
+object. This is expected to have been initialized for EACH REQUEST by the web
+framework.</p>
+<div class="section" id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="routes.util.RoutesException">
+<em class="property">exception </em><tt class="descclassname">routes.util.</tt><tt class="descname">RoutesException</tt><a class="headerlink" href="#routes.util.RoutesException" title="Permalink to this definition">¶</a></dt>
+<dd>Tossed during Route exceptions</dd></dl>
+
+<dl class="exception">
+<dt id="routes.util.MatchException">
+<em class="property">exception </em><tt class="descclassname">routes.util.</tt><tt class="descname">MatchException</tt><a class="headerlink" href="#routes.util.MatchException" title="Permalink to this definition">¶</a></dt>
+<dd>Tossed during URL matching exceptions</dd></dl>
+
+<dl class="exception">
+<dt id="routes.util.GenerationException">
+<em class="property">exception </em><tt class="descclassname">routes.util.</tt><tt class="descname">GenerationException</tt><a class="headerlink" href="#routes.util.GenerationException" title="Permalink to this definition">¶</a></dt>
+<dd>Tossed during URL generation exceptions</dd></dl>
+
+<dl class="class">
+<dt id="routes.util.URLGenerator">
+<em class="property">class </em><tt class="descclassname">routes.util.</tt><tt class="descname">URLGenerator</tt><big>(</big><em>mapper</em>, <em>environ</em><big>)</big><a class="headerlink" href="#routes.util.URLGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>The URL Generator generates URL&#8217;s</p>
+<p>It is automatically instantiated by the RoutesMiddleware and put
+into the <tt class="docutils literal"><span class="pre">wsgiorg.routing_args</span></tt> tuple accessible as:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">url</span> <span class="o">=</span> <span class="n">environ</span><span class="p">[</span><span class="s">&#39;wsgiorg.routing_args&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Or via the <tt class="docutils literal"><span class="pre">routes.url</span></tt> key:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">url</span> <span class="o">=</span> <span class="n">environ</span><span class="p">[</span><span class="s">&#39;routes.url&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The url object may be instantiated outside of a web context for use
+in testing, however sub_domain support and fully qualified URL&#8217;s
+cannot be generated without supplying a dict that must contain the
+key <tt class="docutils literal"><span class="pre">HTTP_HOST</span></tt>.</p>
+<p>Instantiate the URLGenerator</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">mapper</span></tt></dt>
+<dd>The mapper object to use when generating routes.</dd>
+<dt><tt class="docutils literal"><span class="pre">environ</span></tt></dt>
+<dd>The environment dict used in WSGI, alternately, any dict
+that contains at least an <tt class="docutils literal"><span class="pre">HTTP_HOST</span></tt> value.</dd>
+</dl>
+<dl class="method">
+<dt id="routes.util.URLGenerator.current">
+<tt class="descname">current</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#routes.util.URLGenerator.current" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a route that includes params used on the current
+request</p>
+<p>The arguments for this method are identical to <tt class="docutils literal"><span class="pre">__call__</span></tt>
+except that arguments set to None will remove existing route
+matches of the same name from the set of arguments used to
+construct a URL.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="routes.util.url_for">
+<tt class="descclassname">routes.util.</tt><tt class="descname">url_for</tt><big>(</big><em>*args</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#routes.util.url_for" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a URL</p>
+<p>All keys given to url_for are sent to the Routes Mapper instance for 
+generation except for:</p>
+<div class="highlight-python"><pre>anchor          specified the anchor name to be appened to the path
+host            overrides the default (current) host if provided
+protocol        overrides the default (current) protocol if provided
+qualified       creates the URL with the host/port information as 
+                needed</pre>
+</div>
+<p>The URL is generated based on the rest of the keys. When generating a new 
+URL, values will be used from the current request&#8217;s parameters (if 
+present). The following rules are used to determine when and how to keep 
+the current requests parameters:</p>
+<ul class="simple">
+<li>If the controller is present and begins with &#8216;/&#8217;, no defaults are used</li>
+<li>If the controller is changed, action is set to &#8216;index&#8217; unless otherwise 
+specified</li>
+</ul>
+<p>For example, if the current request yielded a dict of
+{&#8216;controller&#8217;: &#8216;blog&#8217;, &#8216;action&#8217;: &#8216;view&#8217;, &#8216;id&#8217;: 2}, with the standard 
+&#8216;:controller/:action/:id&#8217; route, you&#8217;d get the following results:</p>
+<div class="highlight-python"><pre>url_for(id=4)                    =&gt;  '/blog/view/4',
+url_for(controller='/admin')     =&gt;  '/admin',
+url_for(controller='admin')      =&gt;  '/admin/view/2'
+url_for(action='edit')           =&gt;  '/blog/edit/2',
+url_for(action='list', id=None)  =&gt;  '/blog/list'</pre>
+</div>
+<p><strong>Static and Named Routes</strong></p>
+<p>If there is a string present as the first argument, a lookup is done 
+against the named routes table to see if there&#8217;s any matching routes. The
+keyword defaults used with static routes will be sent in as GET query 
+arg&#8217;s if a route matches.</p>
+<p>If no route by that name is found, the string is assumed to be a raw URL. 
+Should the raw URL begin with <tt class="docutils literal"><span class="pre">/</span></tt> then appropriate SCRIPT_NAME data will
+be added if present, otherwise the string will be used as the url with 
+keyword args becoming GET query args.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="routes.util._url_quote">
+<tt class="descclassname">routes.util.</tt><tt class="descname">_url_quote</tt><big>(</big><em>string</em>, <em>encoding</em><big>)</big><a class="headerlink" href="#routes.util._url_quote" title="Permalink to this definition">¶</a></dt>
+<dd>A Unicode handling version of urllib.quote.</dd></dl>
+
+<dl class="function">
+<dt id="routes.util._str_encode">
+<tt class="descclassname">routes.util.</tt><tt class="descname">_str_encode</tt><big>(</big><em>string</em>, <em>encoding</em><big>)</big><a class="headerlink" href="#routes.util._str_encode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="routes.util._screenargs">
+<tt class="descclassname">routes.util.</tt><tt class="descname">_screenargs</tt><big>(</big><em>kargs</em>, <em>mapper</em>, <em>environ</em>, <em>force_explicit=False</em><big>)</big><a class="headerlink" href="#routes.util._screenargs" title="Permalink to this definition">¶</a></dt>
+<dd>Private function that takes a dict, and screens it against the current 
+request dict to determine what the dict should look like that is used. 
+This is responsible for the requests &#8220;memory&#8221; of the current.</dd></dl>
+
+<dl class="function">
+<dt id="routes.util._subdomain_check">
+<tt class="descclassname">routes.util.</tt><tt class="descname">_subdomain_check</tt><big>(</big><em>kargs</em>, <em>mapper</em>, <em>environ</em><big>)</big><a class="headerlink" href="#routes.util._subdomain_check" title="Permalink to this definition">¶</a></dt>
+<dd>Screen the kargs for a subdomain and alter it appropriately depending
+on the current subdomain or lack therof.</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../contents.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#"><tt class="docutils literal"><span class="pre">routes.util</span></tt> &#8211; URL Generator and utility functions</a><ul>
+<li><a class="reference external" href="#module-contents">Module Contents</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="lru.html"
+                                  title="previous chapter"><tt class="docutils literal docutils literal docutils literal"><span class="pre">routes.lru</span></tt> &#8211; LRU caching class and decorator</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/modules/util.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="lru.html" title="routes.lru – LRU caching class and decorator"
+             >previous</a> |</li>
+        <li><a href="../index.html">Routes home</a>&nbsp;|&nbsp;</li>
+        <li><a href="../contents.html">Documentation</a>&raquo;</li>
+
+          <li><a href="index.html" >Routes Modules</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Ben Bangert, Mike Orr.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+    </div>
+  </body>
+</html>

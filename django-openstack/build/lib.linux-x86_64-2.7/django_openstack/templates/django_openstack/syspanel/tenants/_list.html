@@ -1,0 +1,27 @@
+<table class="wide">
+  <tr>
+    <th>Id</th>
+    <th>Name</th>
+    <th>Description</th>
+    <th>Enabled</th>
+    <th>Options</th>
+  </tr>
+  {% for tenant in tenants %}
+    <tr class="{% cycle 'odd' 'even' %}">
+      <td>{{tenant.id}}</td>
+      <td>{{tenant.name}}</td>
+      <td>{{tenant.description}}</td>
+      <td>{{tenant.enabled}}</td>
+      <td id="actions">
+        <ul>
+          <li><a href="{% url syspanel_tenant_users tenant.id %}">View Members</a></li>
+            {% if enabled %}
+            <li><a href="{% url syspanel_tenant_update tenant.id %}">Edit</a></li>
+            <li><a href="{% url syspanel_tenant_quotas tenant.id %}">Modify Quotas</a></li>
+            <li class="form">{% include "django_openstack/syspanel/tenants/_delete.html" with form=tenant_delete_form %}</li>
+            {% endif %}
+        </ul>
+      </td>
+    </tr>
+  {% endfor %}
+</table>

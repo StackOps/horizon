@@ -1,0 +1,75 @@
+2011-09-01 Conrad Weidenkeller <conrad.weidenkeller@rackspace.com>
+  * 1.7.9.3:
+  - Added CDN Streaming Support
+2011-03-25 Conrad Weidenkeller <conrad.weidenkeller@rackspace.com>
+  * 1.7.9.2:
+  - Added Manifest support for Large Objects
+
+2011-03-09 Conrad Weidenkeller <conrad.weidenkeller@rackspace.com>
+  * 1.7.9.1:
+  - Added CDN SSL URI's to storage_objects and containers.
+
+2011-02-24 Conrad Weidenkeller <conrad.weidenkeller@rackspace.com>
+  * 1.7.9:
+  - Added Container Level and Object Level Edge purge functionality
+
+2011-02-16 Chmouel Boudjnah <chmouel.boudjnah@rackspace.co.uk>
+  * 1.7.8:
+   - setup.py: call package python-cloudfiles for pypi.
+
+2011-01-27 Chmouel Boudjnah <chmouel.boudjnah@rackspace.co.uk>
+   * 1.7.7: 
+   - fixed error where get_objects with a delimiter would error (John).
+   - Added setuptools support (BJ).
+   - Fix unit tests (BJ).
+   - pypi upload support.
+
+2011-01-19 John Dickinson <john@johnandkaren.com>
+	* 1.7.6:  Fixed error where re-authenticating a request would result in a failed request
+
+2011-01-19 John Dickinson <john@johnandkaren.com>
+	* 1.7.5.1:  Updated missing reference to delimiter query.
+
+2011-01-05 Chmouel Boudjnah <chmouel.boudjnah@rackspace.co.uk>
+	* 1.7.5:  Add support for different auth servers (cweidenkeller).
+
+2010-12-03 John Dickinson <john@johnandkaren.com>
+	* 1.7.4: Added delimiter query support
+			 Added settable user agent string
+
+2010-09-02 Chmouel Boudjnah <chmouel@chmouel.com>
+    * Fix python2.7 error (github issue 7)
+
+2010-05-05 Conrad Weidenkeller <cweidenkeller@rackspace.com>
+    * 1.7.3: Subclassed HTTP and HTTPS connection allowing for instance based socket timeouts. 
+
+2009-04-02  Michael Shuler  <mshuler@rackspace.com>
+
+    * 1.7.2: Version bump to rebuild release after merge
+
+2009-04-02  Chmouel Boudjnah  <chmouel.boudjnah@rackspace.co.uk>
+
+    * 1.7.1: Properly set socket timeout (prestontimmons).
+             fixed bug in auth server connection (notmyname).
+             Fix unit tests (sorenh).
+             Regenerate properly documentation (exlt).
+
+2009-01-29  Chmouel Boudjnah  <chmouel.boudjnah@rackspace.co.uk>
+
+    * 1.7.0: Adjust api auth to rackspacecloud not mosso (jdickinson).
+
+2009-11-13  Chmouel Boudjnah  <chmouel.boudjnah@rackspace.co.uk>
+
+    * 1.6.0: Add cdn acl by referrer and by user agent feature.
+
+2009-10-20  Chmouel Boudjnah  <chmouel.boudjnah@rackspace.co.uk>
+
+    * 1.5.1: if the environement variable RACKSPACE_SERVICENET is set
+             to anything) it will automatically set servicenet=True.
+
+2009-10-20  Chmouel Boudjnah  <chmouel.boudjnah@rackspace.co.uk>
+
+    * 1.5.0: Add support of servicenet if you add servicenet=True to
+             get_connection it will use Rackspace network servicenet.
+
+# vim:set ai sw=4 ts=4 tw=0 expandtab:

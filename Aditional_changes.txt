@@ -1,0 +1,8 @@
+Color-light: #ECECEC;
+Color-dark: #D9D9D9;
+
+#c9ead1 to #ECECEC
+#9dd1a9 to #D9D9D9
+
+overflow: auto
+overflow-x: hidden;

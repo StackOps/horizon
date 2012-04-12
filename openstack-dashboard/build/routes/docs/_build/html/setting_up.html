@@ -1,0 +1,462 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Setting up routes &mdash; Routes v1.12.1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '#',
+        VERSION:     '1.12.1',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Routes v1.12.1 documentation"
+          href="_static/opensearch.xml"/>
+    <link rel="top" title="Routes v1.12.1 documentation" href="index.html" />
+    <link rel="next" title="Generation" href="generating.html" />
+    <link rel="prev" title="Introduction" href="introduction.html" /> 
+  </head>
+  <body>
+<div style="color: #D1361B; font-size: 70px; font-weight: bold; padding: 10px 0 0 10px;">Routes</div>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="generating.html" title="Generation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Routes home</a>&nbsp;|&nbsp;</li>
+        <li><a href="contents.html">Documentation</a>&raquo;</li>
+ 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="setting-up-routes">
+<h1>Setting up routes<a class="headerlink" href="#setting-up-routes" title="Permalink to this headline">¶</a></h1>
+<p>It is assumed that you are using a framework that has preconfigured Routes for
+you.  In Pylons, you define your routes in the <tt class="docutils literal"><span class="pre">make_map</span></tt> function in your
+<em>myapp/config/routing.py</em> module.  Here is a typical configuration:</p>
+<div class="highlight-python"><pre>1   from routes import Mapper
+2   map = Mapper()
+3   map.connect(None, "/error/{action}/{id}, controller="error")
+4   map.connect("home", "/", controller="main", action="index")
+5   # ADD CUSTOM ROUTES HERE
+6   map.connect(None, "/{controller}/{action}")
+7   map.connect(None, "/{controller}/{action}/{id}")</pre>
+</div>
+<p>Lines 1 and 2 create a mapper.</p>
+<p>Line 3 matches any three-component route that starts with &#8220;/error&#8221;, and sets
+the &#8220;controller&#8221; variable to a constant, so that a URL
+&#8220;/error/images/arrow.jpg&#8221; would produce:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&quot;controller&quot;</span><span class="p">:</span> <span class="s">&quot;error&quot;</span><span class="p">,</span> <span class="s">&quot;action&quot;</span><span class="p">:</span> <span class="s">&quot;images&quot;</span><span class="p">,</span> <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;arrow.jpg&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Line 4 matches the single URL &#8220;/&#8221;, and sets both the controller and action to
+constants.  It also has a route name &#8220;home&#8221;, which can be used in generation.
+(The other routes have <tt class="xref docutils literal"><span class="pre">None</span></tt> instead of a name, so they don&#8217;t have names.
+It&#8217;s recommended to name all routes that may be used in generation, but it&#8217;s
+not necessary to name other routes.)</p>
+<p>Line 6 matches any two-component URL, and line 7 matches any 3-component URL.
+These are used as catchall routes if we&#8217;re too lazy to define a separate route
+for every action.  If you <em>have</em> defined a route for every action, you can
+delete these two routes.</p>
+<p>Note that a URL &#8220;/error/images/arrow.jpg&#8221; could match both line 3 and line 7.
+The mapper resolves this by trying routes in the order defined, so this URL
+would match line 3.</p>
+<p>If no routes match the URL, the mapper returns a &#8220;match failed&#8221; condition,
+which is seen in Pylons as HTTP 404 &#8220;Not Found&#8221;.</p>
+<p>Here are some more examples of valid routes:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">m</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;/feeds/{category}/atom.xml&quot;</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="s">&quot;feeds&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;atom&quot;</span><span class="p">)</span>
+<span class="n">m</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;history&quot;</span><span class="p">,</span> <span class="s">&quot;/archives/by_eon/{century}&quot;</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="s">&quot;archives&quot;</span><span class="p">,</span>
+          <span class="n">action</span><span class="o">=</span><span class="s">&quot;aggregate&quot;</span><span class="p">)</span>
+<span class="n">m</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;article&quot;</span><span class="p">,</span> <span class="s">&quot;/article/{section}/{slug}/{page}.html&quot;</span><span class="p">,</span>
+          <span class="n">controller</span><span class="o">=</span><span class="s">&quot;article&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;view&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Extra variables may be any Python type, not just strings.  However, if the
+route is used in generation, <tt class="docutils literal"><span class="pre">str()</span></tt> will  be called on the value unless
+the generation call specifies an overriding value.</p>
+<p>Other argument syntaxes are allowed for compatibility with earlier versions of
+Routes.  These are described in the <tt class="docutils literal"><span class="pre">Backward</span> <span class="pre">Compatibility</span></tt> section.</p>
+<p>Route paths should always begin with a slash (&#8220;/&#8221;).  Earlier versions of
+Routes allowed slashless paths, but their behavior now is undefined.</p>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<p>It&#8217;s possible to restrict a path variable to a regular expression; e.g., to
+match only a numeric component or a restricted choice of words.  There are two
+syntaxes for this: inline and the <tt class="docutils literal"><span class="pre">requirements</span></tt> argument.  An inline
+requirement looks like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">map</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">R&quot;/blog/{id:\d+}&quot;</span><span class="p">)</span>
+<span class="nb">map</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">R&quot;/download/{platform:windows|mac}/{filename}&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This matches &#8220;/blog/123&#8221; but not &#8220;/blog/12A&#8221;.  The equivalent <tt class="docutils literal"><span class="pre">requirements</span></tt>
+syntax is:</p>
+<div class="highlight-python"><pre>map.connect("/blog/{id}", requirements={"id": R"\d+"}
+map.connect("/download/{platform}/{filename}",
+    requirements={"platform": R"windows|mac"})</pre>
+</div>
+<p>Note the use of raw string syntax (<tt class="docutils literal"><span class="pre">R&quot;&quot;</span></tt>) for regexes which might contain
+backslashes.  Without the R you&#8217;d have to double every backslash.</p>
+<p>Another example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">m</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;archives/{year}/{month}/{day}&quot;</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="s">&quot;archives&quot;</span><span class="p">,</span>
+          <span class="n">action</span><span class="o">=</span><span class="s">&quot;view&quot;</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="mi">2004</span><span class="p">,</span>
+          <span class="n">requirements</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="s">R&quot;\d{2,4}&quot;</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="s">R&quot;\d{1,2}&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The inline syntax was added in Routes (XXX 1.10?? not in changelog).  Previous
+versions had only the <tt class="docutils literal"><span class="pre">requirements</span></tt> argument.  Two advantages of the
+<tt class="docutils literal"><span class="pre">requirements</span></tt> argument are that if you have several variables with identical
+requirements, you can set one variable or even the entire argument to a
+global:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">NUMERIC</span> <span class="o">=</span> <span class="s">R&quot;\d+&quot;</span>
+<span class="nb">map</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">requirements</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="n">NUMERIC</span><span class="p">})</span>
+
+<span class="n">ARTICLE_REQS</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;year&quot;</span><span class="p">:</span> <span class="s">R&quot;\d\d\d\d&quot;</span><span class="p">,</span> <span class="s">&quot;month&quot;</span><span class="p">:</span> <span class="s">R&quot;\d\d&quot;</span><span class="p">,</span> <span class="s">&quot;day&quot;</span><span class="p">:</span> <span class="s">R&quot;\d\d&quot;</span><span class="p">}</span>
+<span class="nb">map</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">requirements</span><span class="o">=</span><span class="n">ARTICLE_REQS</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Because the argument <tt class="docutils literal"><span class="pre">requirements</span></tt> is reserved, you can&#8217;t define a routing
+variable by that name.</p>
+</div>
+<div class="section" id="magic-path-info">
+<h2>Magic path_info<a class="headerlink" href="#magic-path-info" title="Permalink to this headline">¶</a></h2>
+<p>If the &#8220;path_info&#8221; variable is used at the end of the URL, Routes moves
+everything preceding it into the &#8220;SCRIPT_NAME&#8221; environment variable.  This is
+useful when delegating to another WSGI application that does its own routing:
+the subapplication will route on the remainder of the URL rather than the
+entire URL.  You still
+need the &#8220;:.*&#8221; requirement to capture the following URL components into the
+variable.</p>
+<div class="highlight-python"><pre>map.connect(None, "/cards/{path_info:.*}",
+    controller="main", action="cards")
+# Incoming URL "/cards/diamonds/4.png"
+=&gt; {"controller": "main", action: "cards", "path_info": "/diamonds/4.png"}
+# Second WSGI application sees:
+# SCRIPT_NAME="/cards"   PATH_INFO="/diamonds/4.png"</pre>
+</div>
+<p>This route does not match &#8220;/cards&#8221; because it requires a following slash.
+Add another route to get around this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">map</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;cards&quot;</span><span class="p">,</span> <span class="s">&quot;/cards&quot;</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="s">&quot;main&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;cards&quot;</span><span class="p">,</span>
+    <span class="n">path_info</span><span class="o">=</span><span class="s">&quot;/&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p>You may think you can combine the two with the following route:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">map</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;cards&quot;</span><span class="p">,</span> <span class="s">&quot;/cards{path_info:.*}&quot;</span><span class="p">,</span>
+    <span class="n">controller</span><span class="o">=</span><span class="s">&quot;main&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;cards&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="last">There are two problems with this, however. One, it would also match
+&#8220;/cardshark&#8221;.  Two, Routes 1.10 has a bug: it forgets to take
+the suffix off the SCRIPT_NAME.</p>
+</div>
+<p>A future version of Routes may delegate directly to WSGI applications, but for
+now this must be done in the framework.  In Pylons, you can do this in a
+controller action as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">paste.fileapp</span> <span class="kn">import</span> <span class="n">DirectoryApp</span>
+<span class="k">def</span> <span class="nf">cards</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">DirectoryApp</span><span class="p">(</span><span class="s">&quot;/cards-directory&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">app</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or create a fake controller module with a <tt class="docutils literal"><span class="pre">__controller__</span></tt> variable set to
+the WSGI application:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">paste.fileapp</span> <span class="kn">import</span> <span class="n">DirectoryApp</span>
+<span class="n">__controller__</span> <span class="o">=</span> <span class="n">DirectoryApp</span><span class="p">(</span><span class="s">&quot;/cards-directory&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="conditions">
+<h2>Conditions<a class="headerlink" href="#conditions" title="Permalink to this headline">¶</a></h2>
+<p>Conditions impose additional constraints on what kinds of requests can match.
+The <tt class="docutils literal"><span class="pre">conditions</span></tt> argument is a dict with up to three keys:</p>
+<blockquote>
+<p>method</p>
+<blockquote>
+A list of uppercase HTTP methods.  The request must be one of the
+listed methods.</blockquote>
+<p>sub_domain</p>
+<blockquote>
+<p>Can be a list of subdomains, <tt class="xref docutils literal"><span class="pre">True</span></tt>, <tt class="xref docutils literal"><span class="pre">False</span></tt>, or <tt class="xref docutils literal"><span class="pre">None</span></tt>.  If a
+list, the request must be for one of the specified subdomains.  If
+<tt class="xref docutils literal"><span class="pre">True</span></tt>, the request must contain a subdomain but it can be anything.
+If <tt class="xref docutils literal"><span class="pre">False</span></tt> or <tt class="xref docutils literal"><span class="pre">None</span></tt>, do not match if there&#8217;s a subdomain.</p>
+<p><em>New in Routes 1.10: ``False`` and ``None`` values.</em></p>
+</blockquote>
+<p>function</p>
+<blockquote>
+A function that evaluates the request.  Its signature must be
+<tt class="docutils literal"><span class="pre">func(environ,</span> <span class="pre">match_dict)</span> <span class="pre">=&gt;</span> <span class="pre">bool</span></tt>.  It should return true if the
+match is successful or false otherwise.  The first arg is the WSGI
+environment; the second is the routing variables that would be
+returned if the match succeeds.  The function can modify <tt class="docutils literal"><span class="pre">match_dict</span></tt>
+in place to affect which variables are returned.  This allows a wide
+range of transformations.</blockquote>
+</blockquote>
+<p>Examples:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Match only if the HTTP method is &quot;GET&quot; or &quot;HEAD&quot;.</span>
+<span class="n">m</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;/user/list&quot;</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="s">&quot;user&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;list&quot;</span><span class="p">,</span>
+          <span class="n">conditions</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;GET&quot;</span><span class="p">,</span> <span class="s">&quot;HEAD&quot;</span><span class="p">]))</span>
+
+<span class="c"># A sub-domain should be present.</span>
+<span class="n">m</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="s">&quot;user&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;home&quot;</span><span class="p">,</span>
+          <span class="n">conditions</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">sub_domain</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+
+<span class="c"># Sub-domain should be either &quot;fred&quot; or &quot;george&quot;.</span>
+<span class="n">m</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="s">&quot;user&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;home&quot;</span><span class="p">,</span>
+          <span class="n">conditions</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">sub_domain</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;fred&quot;</span><span class="p">,</span> <span class="s">&quot;george&quot;</span><span class="p">]))</span>
+
+<span class="c"># Put the referrer into the resulting match dictionary.</span>
+<span class="c"># This function always returns true, so it never prevents the match</span>
+<span class="c"># from succeeding.</span>
+<span class="k">def</span> <span class="nf">referals</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+    <span class="n">result</span><span class="p">[</span><span class="s">&quot;referer&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;HTTP_REFERER&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">True</span>
+<span class="n">m</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;/{controller}/{action}/{id}&quot;</span><span class="p">,</span>
+    <span class="n">conditions</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">function</span><span class="o">=</span><span class="n">referals</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="wildcard-routes">
+<h2>Wildcard routes<a class="headerlink" href="#wildcard-routes" title="Permalink to this headline">¶</a></h2>
+<p>By default, path variables do not match a slash.  This ensures that each
+variable will match exactly one component.  You can use requirements to
+override this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">map</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;/static/{filename:.*?}&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This matches &#8220;/static/foo.jpg&#8221;, &#8220;/static/bar/foo.jpg&#8221;, etc.</p>
+<p>Beware that careless regexes may eat the entire rest of the URL and cause
+components to the right of it not to match:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># OK because the following component is static and the regex has a &quot;?&quot;.</span>
+<span class="nb">map</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;/static/{filename:.*?}/download&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The lesson is to always test wildcard patterns.</p>
+</div>
+<div class="section" id="format-extensions">
+<h2>Format extensions<a class="headerlink" href="#format-extensions" title="Permalink to this headline">¶</a></h2>
+<p>A path component of <tt class="docutils literal"><span class="pre">{.format}</span></tt> will match an optional format extension (e.g.
+&#8220;.html&#8221; or &#8220;.json&#8221;), setting the format variable to the part after the &#8220;.&#8221;
+(e.g. &#8220;html&#8221; or &#8220;json&#8221;) if there is one, or to <tt class="xref docutils literal"><span class="pre">None</span></tt> otherwise.  For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">map</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&#39;/entries/{id}{.format}&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>will match &#8220;/entries/1&#8221; and &#8220;/entries/1.mp3&#8221;.  You can use requirements to
+limit which extensions will match, for example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">map</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&#39;/entries/{id:\d+}{.format:json}&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>will match &#8220;/entries/1&#8221; and &#8220;/entries/1.json&#8221; but not &#8220;/entries/1.mp3&#8221;.</p>
+<p>As with wildcard routes, it&#8217;s important to understand and test this.  Without
+the <tt class="docutils literal"><span class="pre">\d+</span></tt> requirement on the <tt class="docutils literal"><span class="pre">id</span></tt> variable above, &#8220;/entries/1.mp3&#8221; would match
+successfully, with the <tt class="docutils literal"><span class="pre">id</span></tt> variable capturing &#8220;1.mp3&#8221;.</p>
+<p><em>New in Routes 1.12.</em></p>
+</div>
+<div class="section" id="submappers">
+<h2>Submappers<a class="headerlink" href="#submappers" title="Permalink to this headline">¶</a></h2>
+<p>A submapper lets you add several similar routes
+without having to repeat identical keyword arguments.  There are two syntaxes,
+one using a Python <tt class="docutils literal"><span class="pre">with</span></tt> block, and the other avoiding it.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Using &#39;with&#39;</span>
+<span class="k">with</span> <span class="nb">map</span><span class="o">.</span><span class="n">submapper</span><span class="p">(</span><span class="n">controller</span><span class="o">=</span><span class="s">&quot;home&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">m</span><span class="p">:</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;home&quot;</span><span class="p">,</span> <span class="s">&quot;/&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;splash&quot;</span><span class="p">)</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;index&quot;</span><span class="p">,</span> <span class="s">&quot;/index&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;index&quot;</span><span class="p">)</span>
+
+<span class="c"># Not using &#39;with&#39;</span>
+<span class="n">m</span> <span class="o">=</span> <span class="nb">map</span><span class="o">.</span><span class="n">submapper</span><span class="p">(</span><span class="n">controller</span><span class="o">=</span><span class="s">&quot;home&quot;</span><span class="p">)</span>
+<span class="n">m</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;home&quot;</span><span class="p">,</span> <span class="s">&quot;/&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;splash&quot;</span><span class="p">)</span>
+<span class="n">m</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;index&quot;</span><span class="p">,</span> <span class="s">&quot;/index&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;index&quot;</span><span class="p">)</span>
+
+<span class="c"># Both of these syntaxes create the following routes::</span>
+<span class="c"># &quot;/&quot;      =&gt; {&quot;controller&quot;: &quot;home&quot;, action=&quot;splash&quot;}</span>
+<span class="c"># &quot;/index&quot; =&gt; {&quot;controller&quot;: &quot;home&quot;, action=&quot;index&quot;}</span>
+</pre></div>
+</div>
+<p>You can also specify a common path prefix for your routes:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">with</span> <span class="nb">map</span><span class="o">.</span><span class="n">submapper</span><span class="p">(</span><span class="n">path_prefix</span><span class="o">=</span><span class="s">&quot;/admin&quot;</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="s">&quot;admin&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">m</span><span class="p">:</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;admin_users&quot;</span><span class="p">,</span> <span class="s">&quot;/users&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;users&quot;</span><span class="p">)</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;admin_databases&quot;</span><span class="p">,</span> <span class="s">&quot;/databases&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;databases&quot;</span><span class="p">)</span>
+
+<span class="c"># /admin/users     =&gt; {&quot;controller&quot;: &quot;admin&quot;, &quot;action&quot;: &quot;users&quot;}</span>
+<span class="c"># /admin/databases =&gt; {&quot;controller&quot;: &quot;admin&quot;, &quot;action&quot;: &quot;databases&quot;}</span>
+</pre></div>
+</div>
+<p>All arguments to <tt class="docutils literal"><span class="pre">.submapper</span></tt> must be keyword arguments.</p>
+<p>The submapper is <em>not</em> a complete mapper.  It&#8217;s just a temporary object
+with a <tt class="docutils literal"><span class="pre">.connect</span></tt> method that adds routes to the mapper it was spawned
+from.</p>
+<p><em>New in Routes 1.11.</em></p>
+</div>
+<div class="section" id="submapper-helpers">
+<h2>Submapper helpers<a class="headerlink" href="#submapper-helpers" title="Permalink to this headline">¶</a></h2>
+<p>Submappers contain a number of helpers that further simplify routing
+configuration.  This:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">with</span> <span class="nb">map</span><span class="o">.</span><span class="n">submapper</span><span class="p">(</span><span class="n">controller</span><span class="o">=</span><span class="s">&quot;home&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">m</span><span class="p">:</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;home&quot;</span><span class="p">,</span> <span class="s">&quot;/&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;splash&quot;</span><span class="p">)</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&quot;index&quot;</span><span class="p">,</span> <span class="s">&quot;/index&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;index&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>can be written:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">with</span> <span class="nb">map</span><span class="o">.</span><span class="n">submapper</span><span class="p">(</span><span class="n">controller</span><span class="o">=</span><span class="s">&quot;home&quot;</span><span class="p">,</span> <span class="n">path_prefix</span><span class="o">=</span><span class="s">&quot;/&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">m</span><span class="p">:</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">action</span><span class="p">(</span><span class="s">&quot;home&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;splash&quot;</span><span class="p">)</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">link</span><span class="p">(</span><span class="s">&quot;index&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">action</span></tt> helper generates a route for one or more HTTP methods (&#8216;GET&#8217; is
+assumed) at the submapper&#8217;s path (&#8216;/&#8217; in the example above).  The <tt class="docutils literal"><span class="pre">link</span></tt>
+helper generates a route at a relative path.</p>
+<p>There are specific helpers corresponding to the standard <tt class="docutils literal"><span class="pre">index</span></tt>, <tt class="docutils literal"><span class="pre">new</span></tt>,
+<tt class="docutils literal"><span class="pre">create</span></tt>, <tt class="docutils literal"><span class="pre">show</span></tt>, <tt class="docutils literal"><span class="pre">edit</span></tt>, <tt class="docutils literal"><span class="pre">update</span></tt> and <tt class="docutils literal"><span class="pre">delete</span></tt> actions.
+You can use these directly:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">with</span> <span class="nb">map</span><span class="o">.</span><span class="n">submapper</span><span class="p">(</span><span class="n">controller</span><span class="o">=</span><span class="s">&quot;entries&quot;</span><span class="p">,</span> <span class="n">path_prefix</span><span class="o">=</span><span class="s">&quot;/entries&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">entries</span><span class="p">:</span>
+    <span class="n">entries</span><span class="o">.</span><span class="n">index</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">entries</span><span class="o">.</span><span class="n">submapper</span><span class="p">(</span><span class="n">path_prefix</span><span class="o">=</span><span class="s">&quot;/{id}&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">entry</span><span class="p">:</span>
+        <span class="n">entry</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>or indirectly:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">with</span> <span class="nb">map</span><span class="o">.</span><span class="n">submapper</span><span class="p">(</span><span class="n">controller</span><span class="o">=</span><span class="s">&quot;entries&quot;</span><span class="p">,</span> <span class="n">path_prefix</span><span class="o">=</span><span class="s">&quot;/entries&quot;</span><span class="p">,</span>
+                   <span class="n">actions</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;index&quot;</span><span class="p">])</span> <span class="k">as</span> <span class="n">entries</span><span class="p">:</span>
+    <span class="n">entries</span><span class="o">.</span><span class="n">submapper</span><span class="p">(</span><span class="n">path_prefix</span><span class="o">=</span><span class="s">&quot;/{id}&quot;</span><span class="p">,</span> <span class="n">actions</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;show&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Collection/member submappers nested in this way are common enough that there is
+helper for this too:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">map</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="n">collection_name</span><span class="o">=</span><span class="s">&quot;entries&quot;</span><span class="p">,</span> <span class="n">member_name</span><span class="o">=</span><span class="s">&quot;entry&quot;</span><span class="p">,</span>
+               <span class="n">controller</span><span class="o">=</span><span class="s">&quot;entries&quot;</span><span class="p">,</span>
+               <span class="n">collection_actions</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;index&quot;</span><span class="p">],</span> <span class="n">member_actions</span><span class="p">[</span><span class="s">&quot;show&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>This returns a submapper instance to which further routes may be added; it has
+a <tt class="docutils literal"><span class="pre">member</span></tt> property (a nested submapper) to which which member-specific routes
+can be added.  When <tt class="docutils literal"><span class="pre">collection_actions</span></tt> or <tt class="docutils literal"><span class="pre">member_actions</span></tt> are omitted,
+the full set of actions is generated (see the example under &#8220;Printing&#8221; below).</p>
+<p>See &#8220;RESTful services&#8221; below for <tt class="docutils literal"><span class="pre">map.resource</span></tt>, a precursor to
+<tt class="docutils literal"><span class="pre">map.collection</span></tt> that does not use submappers.</p>
+<p><em>New in Routes 1.12.</em></p>
+</div>
+<div class="section" id="adding-routes-from-a-nested-application">
+<h2>Adding routes from a nested application<a class="headerlink" href="#adding-routes-from-a-nested-application" title="Permalink to this headline">¶</a></h2>
+<p><em>New in Routes 1.11.</em>  Sometimes in nested applications, the child application
+gives the parent a list of routes to add to its mapper.  These can be added
+with the <tt class="docutils literal"><span class="pre">.extend</span></tt> method, optionally providing a path prefix:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">routes</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Route</span><span class="p">(</span><span class="s">&quot;index&quot;</span><span class="p">,</span> <span class="s">&quot;/index.html&quot;</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="s">&quot;home&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;index&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+<span class="nb">map</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">routes</span><span class="p">)</span>
+<span class="c"># /index.html =&gt; {&quot;controller&quot;: &quot;home&quot;, &quot;action&quot;: &quot;index&quot;}</span>
+
+<span class="nb">map</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">routes</span><span class="p">,</span> <span class="s">&quot;/subapp&quot;</span><span class="p">)</span>
+<span class="c"># /subapp/index.html =&gt; {&quot;controller&quot;: &quot;home&quot;, &quot;action&quot;: &quot;index&quot;}</span>
+</pre></div>
+</div>
+<p>This does not exactly add the route objects to the mapper.  It creates
+identical new route objects and adds those to the mapper.</p>
+<p><em>New in Routes 1.11.</em></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="contents.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">Setting up routes</a><ul>
+<li><a class="reference external" href="#requirements">Requirements</a></li>
+<li><a class="reference external" href="#magic-path-info">Magic path_info</a></li>
+<li><a class="reference external" href="#conditions">Conditions</a></li>
+<li><a class="reference external" href="#wildcard-routes">Wildcard routes</a></li>
+<li><a class="reference external" href="#format-extensions">Format extensions</a></li>
+<li><a class="reference external" href="#submappers">Submappers</a></li>
+<li><a class="reference external" href="#submapper-helpers">Submapper helpers</a></li>
+<li><a class="reference external" href="#adding-routes-from-a-nested-application">Adding routes from a nested application</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="introduction.html"
+                                  title="previous chapter">Introduction</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="generating.html"
+                                  title="next chapter">Generation</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/setting_up.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="generating.html" title="Generation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Introduction"
+             >previous</a> |</li>
+        <li><a href="index.html">Routes home</a>&nbsp;|&nbsp;</li>
+        <li><a href="contents.html">Documentation</a>&raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Ben Bangert, Mike Orr.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+    </div>
+  </body>
+</html>

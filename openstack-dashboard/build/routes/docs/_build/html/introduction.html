@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &mdash; Routes v1.12.1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '#',
+        VERSION:     '1.12.1',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Routes v1.12.1 documentation"
+          href="_static/opensearch.xml"/>
+    <link rel="top" title="Routes v1.12.1 documentation" href="index.html" />
+    <link rel="next" title="Setting up routes" href="setting_up.html" />
+    <link rel="prev" title="Routes Documentation" href="contents.html" /> 
+  </head>
+  <body>
+<div style="color: #D1361B; font-size: 70px; font-weight: bold; padding: 10px 0 0 10px;">Routes</div>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="setting_up.html" title="Setting up routes"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="contents.html" title="Routes Documentation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Routes home</a>&nbsp;|&nbsp;</li>
+        <li><a href="contents.html">Documentation</a>&raquo;</li>
+ 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<img align="left" alt="_images/routes-logo.png" class="align-left" src="_images/routes-logo.png" style="width: 100px; height: 171px;" />
+<p>Routes tackles an interesting problem that comes up frequently in web
+development, <em>how do you map URLs to your application&#8217;s actions</em>? That is, how
+do you say that <em>this</em> should be accessed as &#8220;/blog/2008/01/08&#8221;, and &#8220;/login&#8221;
+should do <em>that</em>? Many web frameworks have a fixed dispatching system; e.g.,
+&#8220;/A/B/C&#8221; means to read file &#8220;C&#8221; in directory &#8220;B&#8221;, or to call method &#8220;C&#8221; of
+class &#8220;B&#8221; in module &#8220;A.B&#8221;. These work fine until you need to refactor your code
+and realize that moving a method changes its public URL and invalidates users&#8217;
+bookmarks.  Likewise, if you want to reorganize your URLs and make a section
+into a subsection, you have to change your carefully-tested logic code.</p>
+<p>Routes takes a different approach. You determine your URL hierarchy and and
+actions separately, and then link them together in whichever ways you decide.
+If you change your mind about a particular URL, just change one line in your
+route map and never touch your action logic. You can even have multiple URLs
+pointing to the same action; e.g., to support legacy bookmarks.  Routes was
+originally inspired by the dispatcher in Ruby on Rails but has since diverged.</p>
+<p>Routes is the primary dispatching system in the Pylons web framework, and an
+optional choice in CherryPy. It can be added to any
+framework without much fuss, and used for an entire site or a URL subtree.
+It can also forward subtrees to other dispatching systems, which is how
+TurboGears 2 is implemented on top of Pylons.</p>
+<p>Current features:</p>
+<ul class="simple">
+<li>Sophisticated route lookup and URL generation</li>
+<li>Named routes</li>
+<li>Redirect routes</li>
+<li>Wildcard paths before and after static parts</li>
+<li>Sub-domain support built-in</li>
+<li>Conditional matching based on domain, cookies, HTTP method (RESTful), and more</li>
+<li>Easily extensible utilizing custom condition functions and route generation
+functions</li>
+<li>Extensive unit tests</li>
+</ul>
+<p>Buzzword compliance:  REST, DRY.</p>
+<p>If you&#8217;re new to Routes or have not read the Routes 1.11 manual before, we
+recommend reading the <a class="reference external" href="glossary.html">Glossary</a> before continuing.</p>
+<p>This manual is written from the user&#8217;s perspective: how to use Routes in a
+framework that already supports it. The <a class="reference external" href="porting.html">Porting</a>
+manual describes how to add Routes support to a new framework.</p>
+<p>You may have heard about a development version called &#8220;Routes 2&#8221;.  Routes 2 is
+now called &#8220;Routes-experimental&#8221;.  It was originally intended to be a
+refactoring with a new API.  Instead its features are being incorporated into
+Routes 1 in a compatible manner.  There may be another Routes 2 in the future
+that drops deprecated features, but it&#8217;s too early to say when/if that might
+happen.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="contents.html"
+                                  title="previous chapter">Routes Documentation</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="setting_up.html"
+                                  title="next chapter">Setting up routes</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/introduction.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="setting_up.html" title="Setting up routes"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="contents.html" title="Routes Documentation"
+             >previous</a> |</li>
+        <li><a href="index.html">Routes home</a>&nbsp;|&nbsp;</li>
+        <li><a href="contents.html">Documentation</a>&raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Ben Bangert, Mike Orr.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+    </div>
+  </body>
+</html>

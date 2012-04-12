@@ -1,0 +1,175 @@
+apt-get install python-django python-django-mailer python-setuptools python-dev python-pip
+python-routes python-webob python-eventlet python-sqlalchemy python-sqlalchemy-ext python-formencode
+python-openid python-paste python-scgi python-pastedeploy python-pastescript python-pyxattr
+libyaml-0-2 python-amqplib python-anyjson python-kombu python-yaml python-mysqldb
+
+cd horizon/django-openstack
+python setup.py build
+sudo python setup.py install
+
+cd ../openstack-dashboard
+python setup.py build
+sudo python setup.py install
+
+mkdir dependencies
+cd dependencies
+wget http://httplib2.googlecode.com/files/httplib2-0.6.0.zip
+pip install httplib2-0.6.0.zip
+
+git clone https://github.com/cloudbuilders/openstackx.git
+cd openstackx
+sudo python setup.py install
+
+cd ..
+git clone https://github.com/cloudbuilders/openstack.compute.git
+cd openstack.compute/
+sudo python setup.py install
+
+cd ..
+git clone https://github.com/cloudbuilders/python-cloudfiles.git
+cd python-cloudfiles/
+sudo python setup.py install
+
+cd ..
+git clone https://github.com/cloudbuilders/glance.git
+cd glance
+sudo python setup.py install
+cd ..
+git clone https://github.com/openstack/python-novaclient.git
+cd python-novaclient
+sudo python setup.py install
+
+cd ..
+git clone https://github.com/openstack/python-quantumclient.git
+cd python-quantumclient
+sudo python setup.py install
+
+cd ../tools
+sudo easy_install virtualenv
+python install_venv.py
+
+
+Create Mysql database and user:
+
+mysql -uroot
+create database dashboarddb;
+grant ALL on dashboarddb.* to nova@localhost identified by 'st4ck0ps'; ### develop password, not for public access
+exit;
+
+configure the dashboard settings:
+
+cp local/local_settings.py.example local/local_settings.py
+vim local/local_settings.py
+
+this is my local_settings.py file for cloud.stackops.net and
+mysql local backend
+
+import os
+
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
+PROD = False
+USE_SSL = False
+
+LOCAL_PATH = os.path.dirname(os.path.abspath(__file__))
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'dashboarddb',
+        'USER': 'nova',
+        'PASSWORD': 'st4ck0ps',
+        'HOST': 'localhost',
+        'default-character-set': 'utf8',
+    }
+}
+
+CACHE_BACKEND = 'dummy://'
+
+
+# Send email to the console by default
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# Or send them to /dev/null
+#EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
+
+# django-mailer uses a different settings attribute
+MAILER_EMAIL_BACKEND = EMAIL_BACKEND
+
+# Configure these for your outgoing email host
+# EMAIL_HOST = 'smtp.my-company.com'
+# EMAIL_PORT = 25
+# EMAIL_HOST_USER = 'djangomail'
+# EMAIL_HOST_PASSWORD = 'top-secret!'
+
+
+OPENSTACK_KEYSTONE_URL = "http://cloud.stackops.net:5000/v2.0/"
+# FIXME: this is only needed until keystone fixes its GET /tenants call
+# so that it doesn't return everything for admins
+OPENSTACK_KEYSTONE_ADMIN_URL = "http://cloud.stackops.net:35357/v2.0"
+OPENSTACK_KEYSTONE_DEFAULT_ROLE = "Member"
+
+# NOTE(tres): Available services should come from the service
+#             catalog in Keystone.
+SWIFT_ENABLED = False
+
+# Configure quantum connection details for networking
+QUANTUM_ENABLED = False
+QUANTUM_URL = 'cloud.stackops.net'
+QUANTUM_PORT = '9696'
+QUANTUM_TENANT = '1234'
+QUANTUM_CLIENT_VERSION='0.1'
+
+# If you have external monitoring links
+EXTERNAL_MONITORING = [
+    ['Nagios','http://foo.com'],
+    ['Ganglia','http://bar.com'],
+]
+
+# If you do not have external monitoring links
+# EXTERNAL_MONITORING = []
+
+# Uncomment the following segment to silence most logging
+# django.db and boto DEBUG logging is extremely verbose.
+#LOGGING = {
+#        'version': 1,
+#        # set to True will disable all logging except that specified, unless
+#        # nothing is specified except that django.db.backends will still log,
+#        # even when set to True, so disable explicitly
+#        'disable_existing_loggers': False,
+#        'handlers': {
+#            'null': {
+#                'level': 'DEBUG',
+#                'class': 'django.utils.log.NullHandler',
+#                },
+#            'console': {
+#                'level': 'DEBUG',
+#                'class': 'logging.StreamHandler',
+#                },
+#            },
+#        'loggers': {
+#            # Comment or Uncomment these to turn on/off logging output
+#            'django.db.backends': {
+#                'handlers': ['null'],
+#                'propagate': False,
+#                },
+#            'django_openstack': {
+#                'handlers': ['null'],
+#                'propagate': False,
+#            },
+#        }
+#}
+
+# How much ram on each compute host?
+COMPUTE_HOST_RAM_GB = 4
+
+Syncdb:
+
+sudo PYTHONPATH={HORIZON_PATH}openstack-dashboard/ python dashboard/manage.py syncdb
+
+Redirect Ip via IPtables to fix localnetwork ips:
+
+sudo iptables -t nat -A OUTPUT -d 10.15.101.1 -j DNAT --to 109.70.34.37
+
+Execute dev-dashboard
+
+PYTHONPATH={HORIZON_PATH}openstack-dashboard/ python dashboard/manage.py runserver 0.0.0.0:8000
