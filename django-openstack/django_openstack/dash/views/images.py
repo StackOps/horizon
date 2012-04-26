@@ -157,6 +157,15 @@ class LaunchForm(forms.SelfHandlingForm):
         try:
             image = api.image_get(request, image_id)
             flavor = api.flavor_get(request, data['flavor'])
+            services = [s for s in api.service_list(request) if s.type=='nova-compute']
+            max_mem = max([s.stats['memory_mb']-s.stats['memory_mb_used'] for s in services])
+            if max_mem < flavor.ram:
+                messages.error(request, 'Not enough memory available to launch the instance.')
+                return
+            max_disk = max([s.stats['max_gigabytes'] for s in services])
+            if max_disk < flavor.disk:
+                messages.error(request, 'Not enough disk space to launch the instance.')
+                return
             api.server_create(request,
                               data['name'],
                               image,
