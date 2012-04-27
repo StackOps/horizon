@@ -14,5 +14,7 @@
 
 {% block syspanel_main %}
   {% include "django_openstack/syspanel/flavors/_list.html" %}
-  <a id="flavor_create_link" class="action_link large-rounded" href="{% url syspanel_flavors_create %}">Create New Flavor </a>
+{% if enabled %}
+<a id="flavor_create_link" class="action_link large-rounded" href="{% url syspanel_flavors_create %}">Create New Flavor </a>
+{% endif %}
 {% endblock %}

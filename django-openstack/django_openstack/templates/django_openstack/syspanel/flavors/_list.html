@@ -15,9 +15,11 @@
       <td>{{flavor.ram}}MB</td>
       <td>{{flavor.disk}}GB</td>
       <td id="actions">
-        <ul>
+          {% if enabled %}
+          <ul>
           <li class="form">{% include "django_openstack/syspanel/flavors/_delete.html" with form=delete_form %}</li>
-        </ul>
+          </ul>
+          {% endif %}
       </td>
     </tr>
   {% endfor %}

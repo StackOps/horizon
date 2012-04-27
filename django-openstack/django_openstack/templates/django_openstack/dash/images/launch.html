@@ -18,33 +18,20 @@
     </div>
     <div class="right">
       <h3>Description:</h3>
-      <p>Specify the details for launching an instance. Also please make note of the table below; all tenants have quotas which define the limit of resources you are allowed to provision.</p>
-      <table border="0">
-        <tr>
-          <th>Quota Name</th>
-          <th>Limit</th>
-        </tr>
-        <tr>
-          <td>RAM (MB)</td>
-          <td>{{quotas.ram}}MB</td>
-        </tr>
-        <tr>
-          <td>Floating IPs</td>
-          <td>{{quotas.floating_ips}}</td>
-        </tr>
-        <tr>
-          <td>Instances</td>
-          <td>{{quotas.instances}}</td>
-        </tr>
-        <tr>
-          <td>Volumes</td>
-          <td>{{quotas.volumes}}</td>
-        </tr>
-        <tr>
-          <td>Gigabytes</td>
-          <td>{{quotas.gigabytes}}GB</td>
-        </tr>
-      </table>
+      <p>Specify the details for launching an instance. Also please make note you need a valid Key and a Security Group for your Virtual Machine:</p>
+      <p>
+      <ul>
+        <li><b>Server Name:</b> You need to give a name to your virtual machine. This name must be unique and should identify the server from the other machines.</li>
+        <li>&nbsp;</li>
+        <li><b>User Data:</b> (For advanced users) Pass information as metadata to your virtual machine. Useful if you want to configure your servers at boot time.</li>
+        <li>&nbsp;</li>
+        <li><b>Flavor:</b> Server type assigned to your virtual image based on the Virtual CPUs, Memory and Storage needed (Keep in mind that you can add extra storage at any time adding volumes).</li>
+        <li>&nbsp;</li>
+        <li><b>Key Name:</b> User Key to control the access to the Server. You have to check that your virtual image can use Key injection</li>
+        <li>&nbsp;</li>
+        <li><b>Security Groups:</b> Firewall rules to allow or deny access to the ports of your private network. You should use Security Groups combined with Floating IPs to allow traffic from Internet to your servers.</li>
+        <li>&nbsp;</li>
+    </ul></p>
     </div>
     <div class="clear">&nbsp;</div>
   </div>

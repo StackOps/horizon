@@ -94,10 +94,15 @@ def index(request):
         messages.error(request, 'Unable to get usage info: %s' % e.message)
 
     flavors.sort(key=lambda x: x.id, reverse=True)
+    try:
+        enabled = not settings.DISABLE_FLAVORS_ACTIONS
+    except Exception:
+        enabled = True
     return render_to_response(
     'django_openstack/syspanel/flavors/index.html', {
         'delete_form': delete_form,
         'flavors': flavors,
+        'enabled' : enabled,
     }, context_instance=template.RequestContext(request))
 
 

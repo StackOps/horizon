@@ -102,18 +102,9 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 TIME_ZONE = None
 gettext_noop = lambda s: s
 LANGUAGES = (
-    ('en', gettext_noop('English')),
-    ('en-gb', gettext_noop('British English')),
-    ('it', gettext_noop('Italiano')),
-    ('es', gettext_noop('Spanish')),
-    ('fr', gettext_noop('French')),
-    ('ja', gettext_noop('Japanese')),
-    ('pt', gettext_noop('Portuguese')),
-    ('zh-cn', gettext_noop('Simplified Chinese')),
-    ('zh-tw', gettext_noop('Traditional Chinese')),
-)
+    ('en', gettext_noop('English')),)
 LANGUAGE_CODE = 'en'
-USE_I18N = True
+USE_I18N = False
 
 ACCOUNT_ACTIVATION_DAYS = 7
 

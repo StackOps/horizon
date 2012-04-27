@@ -8,9 +8,7 @@
     <li><a {% if current_sidebar == "instances" %} class="active" {% endif %} href="{% url syspanel_instances %}">Instances</a></li>
     <li><a {% if current_sidebar == "flavors" %} class="active" {% endif %} href="{% url syspanel_flavors %}">Flavors</a></li>
     <li><a {% if current_sidebar == "images" %} class="active" {% endif %} href="{% url syspanel_images %}">Images</a></li>
-    <li><a {% if current_sidebar == "tenants" %} class="active" {% endif %} href="{% url syspanel_tenants %}">Tenants</a></li>
     <li><a {% if current_sidebar == "users" %} class="active" {% endif %} href="{% url syspanel_users %}">Users</a></li>
-    <li><a {% if current_sidebar == "quotas" %} class="active" {% endif %} href="{% url syspanel_quotas %}">Quotas</a></li>
   </ul>
 
   {% syspanel_sidebar_modules request %}
