@@ -961,20 +961,19 @@ class GlobalSummary(object):
                            'Unable to get service info: %s' % e.message)
             return
 
-        for service in self.service_list:
-            if service.type == 'nova-compute':
-                self.summary['total_vcpus'] += min(service.stats['max_vcpus'],
-                        service.stats.get('vcpus', 0))
-                self.summary['total_disk_size'] += min(
-                        service.stats['max_gigabytes'],
-                        service.stats.get('local_gb', 0))
-                self.summary['total_ram_size'] += min(
-                        service.stats['max_ram'],
-                        service.stats['memory_mb']) if 'max_ram' \
-                                in service.stats \
-                                else service.stats.get('memory_mb', 0)
-        nova_computes_num = len([s for s in self.service_list if s.type=='nova-compute'])
-        self.summary['total_disk_size'] /= nova_computes_num
+        compute_list = [s for s in self.service_list if s.type=='nova-compute' and s.up and not s.disabled]
+        for service in compute_list:
+            self.summary['total_vcpus'] += min(service.stats['max_vcpus'],
+                    service.stats.get('vcpus', 0))
+            self.summary['total_disk_size'] += min(
+                    service.stats['max_gigabytes'],
+                    service.stats.get('local_gb', 0))
+            self.summary['total_ram_size'] += min(
+                    service.stats['max_ram'],
+                    service.stats['memory_mb']) if 'max_ram' \
+                            in service.stats \
+                            else service.stats.get('memory_mb', 0)
+        self.summary['total_disk_size'] /= len(compute_list)
 
     def usage(self, datetime_start, datetime_end):
         try:
