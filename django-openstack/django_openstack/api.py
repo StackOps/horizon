@@ -973,6 +973,8 @@ class GlobalSummary(object):
                         service.stats['memory_mb']) if 'max_ram' \
                                 in service.stats \
                                 else service.stats.get('memory_mb', 0)
+        nova_computes_num = len([s for s in self.service_list if s.type=='nova-compute'])
+        self.summary['total_disk_size'] /= nova_computes_num
 
     def usage(self, datetime_start, datetime_end):
         try:
