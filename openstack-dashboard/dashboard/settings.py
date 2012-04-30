@@ -128,3 +128,4 @@ if DEBUG:
         logging.info('Running in debug mode without debug_toolbar.')
 
 OPENSTACK_KEYSTONE_DEFAULT_ROLE = 'Member'
+USE_NFS_DISKSPACE = True

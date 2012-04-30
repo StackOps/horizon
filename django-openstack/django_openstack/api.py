@@ -50,6 +50,7 @@ import openstackx.auth
 from novaclient.v1_1 import client
 import quantum.client
 from urlparse import urlparse
+from os import statvfs
 
 LOG = logging.getLogger('django_openstack.api')
 
@@ -973,7 +974,13 @@ class GlobalSummary(object):
                     service.stats['memory_mb']) if 'max_ram' \
                             in service.stats \
                             else service.stats.get('memory_mb', 0)
-        self.summary['total_disk_size'] /= len(compute_list)
+        if(settings.USE_NFS_DISKSPACE):
+            fs = statvfs('/var/lib/glance/images')
+            self.summary['total_disk_size'] = fs.f_blocks*fs.f_bsize / 1048576;
+            self.summary['total_active_disk_size'] = (fs.f_blocks-fs.f_bfree) *fs.f_bsize / 1048576;
+        else:
+            if len(compute_list):
+                self.summary['total_disk_size'] /= len(compute_list)
 
     def usage(self, datetime_start, datetime_end):
         try:
