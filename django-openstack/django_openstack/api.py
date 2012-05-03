@@ -964,8 +964,7 @@ class GlobalSummary(object):
 
         compute_list = [s for s in self.service_list if s.type=='nova-compute' and s.up and not s.disabled]
         for service in compute_list:
-            self.summary['total_vcpus'] += min(service.stats['max_vcpus'],
-                    service.stats.get('vcpus', 0))
+            self.summary['total_vcpus'] += service.stats['max_vcpus']
             self.summary['total_disk_size'] += min(
                     service.stats['max_gigabytes'],
                     service.stats.get('local_gb', 0))
@@ -976,8 +975,8 @@ class GlobalSummary(object):
                             else service.stats.get('memory_mb', 0)
         if(settings.USE_NFS_DISKSPACE):
             fs = statvfs('/var/lib/glance/images')
-            self.summary['total_disk_size'] = fs.f_blocks*fs.f_bsize / 1048576;
-            self.summary['total_active_disk_size'] = (fs.f_blocks-fs.f_bfree) *fs.f_bsize / 1048576;
+            self.summary['total_disk_size'] = fs.f_blocks*fs.f_bsize / 1073741824;
+            self.summary['total_active_disk_size'] = ((fs.f_blocks-fs.f_bfree) * fs.f_bsize) / 1073741824;
         else:
             if len(compute_list):
                 self.summary['total_disk_size'] /= len(compute_list)

@@ -25,6 +25,7 @@ Views for managing Nova images.
 import logging
 
 from django import template
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render_to_response
@@ -37,6 +38,7 @@ from openstackx.api import exceptions as api_exceptions
 from glance.common import exception as glance_exception
 from novaclient import exceptions as novaclient_exceptions
 
+from os import statvfs
 
 LOG = logging.getLogger('django_openstack.dash.views.images')
 
@@ -162,7 +164,11 @@ class LaunchForm(forms.SelfHandlingForm):
             if max_mem < flavor.ram:
                 messages.error(request, 'Not enough memory available to launch the instance.')
                 return
-            max_disk = max([s.stats['max_gigabytes'] for s in services])
+            if(settings.USE_NFS_DISKSPACE):
+                fs = statvfs('/var/lib/glance/images')
+                max_disk = fs.f_bfree * fs.f_bsize / 1073741824
+            else:
+                max_disk = max([s.stats['max_gigabytes'] for s in services])
             if max_disk < flavor.disk:
                 messages.error(request, 'Not enough disk space to launch the instance.')
                 return
