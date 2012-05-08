@@ -159,6 +159,12 @@ class LaunchForm(forms.SelfHandlingForm):
         try:
             image = api.image_get(request, image_id)
             flavor = api.flavor_get(request, data['flavor'])
+            gloval_summary = api.GlobalSummary(request)
+            gloval_summary.service()
+            gloval_summary.avail()
+            if flavor.disk > gloval_summary.summary['total_avail_disk_size']:
+                messages.error(request, 'Unable to launch instance: Insufficient disk space.')
+                return
             api.server_create(request,
                               data['name'],
                               image,
