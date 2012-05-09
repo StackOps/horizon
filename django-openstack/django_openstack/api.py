@@ -976,10 +976,13 @@ class GlobalSummary(object):
         if(settings.USE_NFS_DISKSPACE):
             fs = statvfs('/var/lib/glance/images')
             self.summary['total_disk_size'] = fs.f_blocks*fs.f_bsize / 1073741824;
-            self.summary['total_active_disk_size'] = ((fs.f_blocks-fs.f_bfree) * fs.f_bsize) / 1073741824;
         else:
             if len(compute_list):
                 self.summary['total_disk_size'] /= len(compute_list)
+        total_active_disk_size = float( sum( [s.attrs.disk_gb for s in server_list(self.request)] ) )
+        total_active_disk_size += sum( [v.size for v in volume_list(self.request)] )
+        total_active_disk_size += sum( [i.size/1073741824.0 for i in image_list_detailed(self.request)] )
+        self.summary['total_active_disk_size'] = total_active_disk_size
 
     def usage(self, datetime_start, datetime_end):
         try:
@@ -993,20 +996,6 @@ class GlobalSummary(object):
             messages.error(self.request,
                     'Unable to get usage info: %s' % e.message)
             return
-
-        for usage in self.usage_list:
-            # FIXME: api needs a simpler dict interface (with iteration)
-            # - anthony
-            # NOTE(mgius): Changed this on the api end.  Not too much
-            # neater, but at least its not going into private member
-            # data of an external class anymore
-            # usage = usage._info
-            for k in usage._attrs:
-                v = usage.__getattr__(k)
-                if type(v) in [float, int]:
-                    if not k in self.summary:
-                        self.summary[k] = 0
-                    self.summary[k] += v
 
     def human_readable(self, rsrc):
         if self.summary['total_' + rsrc] > 1023:

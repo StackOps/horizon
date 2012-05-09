@@ -258,6 +258,12 @@ def launch(request, tenant_id, image_id):
         try:
             fl = api.flavor_list(request)
 
+            # Filter flavor list to available disck space.
+            gloval_summary = api.GlobalSummary(request)
+            gloval_summary.service()
+            gloval_summary.avail()
+            fl = [f for f in fl if f.disk<=gloval_summary.summary['total_avail_disk_size']]
+
             # TODO add vcpu count to flavors
             sel = [(f.id, '%s (%svcpu / %sGB Disk / %sMB Ram )' %
                    (f.name, f.vcpus, f.disk, f.ram)) for f in fl]

@@ -31,6 +31,12 @@ class CreateForm(forms.SelfHandlingForm):
 
     def handle(self, request, data):
         try:
+            gloval_summary = api.GlobalSummary(request)
+            gloval_summary.service()
+            gloval_summary.avail()
+            if data['size'] > gloval_summary.summary['total_avail_disk_size']:
+                messages.error(request, 'Unable to create the volumen: Insufficient disk space.')
+                return
             api.volume_create(request, data['size'], data['name'],
                 data['description'])
             message = 'Creating volume "%s"' % data['name']
@@ -158,8 +164,14 @@ def create(request, tenant_id):
     if handled:
         return handled
 
+    gloval_summary = api.GlobalSummary(request)
+    gloval_summary.service()
+    gloval_summary.avail()
+    gloval_summary.human_readable('disk_size')
+
     return render_to_response('django_openstack/dash/volumes/create.html', {
-        'create_form': create_form
+        'create_form': create_form,
+        'total_avail_disk_size': gloval_summary.summary['total_avail_disk_size_hr']
     }, context_instance=template.RequestContext(request))
 
 

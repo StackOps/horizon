@@ -4,7 +4,14 @@
         {% csrf_token %}
         {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
         {% for field in form.visible_fields %}
-        {{ field.label_tag }}
+            {% if field.label == 'Size (GB)' %}
+                <label for="id_size">
+                    Size (GB) -
+                    <span style="font-weight:bold">max {{ total_avail_disk_size|floatformat }} GB</span>
+                </label>
+            {% else %}
+                {{ field.label_tag }}
+            {% endif %}
         {{ field.errors }}
         {{ field }}
         {% endfor %}
