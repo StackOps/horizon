@@ -7,7 +7,7 @@
             {% if field.label == 'Size (GB)' %}
                 <label for="id_size">
                     Size (GB) -
-                    <span style="font-weight:bold">max {{ total_avail_disk_size|floatformat }} GB</span>
+                    <span style="font-weight:bold">max {{ free_disk|floatformat }} GB</span>
                 </label>
             {% else %}
                 {{ field.label_tag }}

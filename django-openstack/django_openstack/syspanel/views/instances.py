@@ -31,6 +31,7 @@ import logging
 from django.contrib import messages
 
 from django_openstack import api
+from django_openstack import utils
 from django_openstack import forms
 from django_openstack.dash.views import instances as dash_instances
 from django_openstack.decorators import enforce_admin_access
@@ -109,7 +110,8 @@ def usage(request):
     else:
         template_name = 'django_openstack/syspanel/instances/usage.html'
         mimetype = "text/html"
-
+    global_summary.summary['total_active_vcpus'] = utils.get_resources(request, 1)['active_vcpus']
+    global_summary.summary['total_avail_vcpus'] -= global_summary.summary['total_active_vcpus']
     return render_to_response(
     template_name, {
         'dateform': dateform,

@@ -958,9 +958,6 @@ class GlobalSummary(object):
         except api_exceptions.ApiException, e:
             self.service_list = []
             LOG.exception('ApiException fetching service list in instance usage')
-            messages.error(self.request,
-                           'Unable to get service info: %s' % e.message)
-            return
 
         compute_list = [s for s in self.service_list if s.type=='nova-compute' and s.up and not s.disabled]
         for service in compute_list:
@@ -975,7 +972,7 @@ class GlobalSummary(object):
                             else service.stats.get('memory_mb', 0)
         if(settings.USE_NFS_DISKSPACE):
             fs = statvfs('/var/lib/glance/images')
-            self.summary['total_disk_size'] = fs.f_blocks*fs.f_bsize / 1073741824;
+            self.summary['total_disk_size'] = fs.f_blocks*fs.f_bsize / 1073741824
         else:
             if len(compute_list):
                 self.summary['total_disk_size'] /= len(compute_list)

@@ -17,6 +17,7 @@ from django.utils.translation import ugettext as _
 
 from django_openstack import api
 from django_openstack import forms
+from django_openstack.utils import get_resources
 from novaclient import exceptions as novaclient_exceptions
 
 
@@ -29,12 +30,14 @@ class CreateForm(forms.SelfHandlingForm):
         label=_("Description"), required=False)
     size = forms.IntegerField(min_value=1, label="Size (GB)")
 
+    def __init__(self, *args, **kwargs):
+        super(CreateForm, self).__init__(*args, **kwargs)
+        self.tenant_id = kwargs['initial']['tenant_id']
+
     def handle(self, request, data):
         try:
-            gloval_summary = api.GlobalSummary(request)
-            gloval_summary.service()
-            gloval_summary.avail()
-            if data['size'] > gloval_summary.summary['total_avail_disk_size']:
+            resources = get_resources(request, self.tenant_id)
+            if data['size'] > resources['free_disk']:
                 messages.error(request, 'Unable to create the volumen: Insufficient disk space.')
                 return
             api.volume_create(request, data['size'], data['name'],
@@ -159,19 +162,16 @@ def detail(request, tenant_id, volume_id):
 
 @login_required
 def create(request, tenant_id):
-    create_form, handled = CreateForm.maybe_handle(request)
+    create_form, handled = CreateForm.maybe_handle(request, initial={'tenant_id':tenant_id})
 
     if handled:
         return handled
 
-    gloval_summary = api.GlobalSummary(request)
-    gloval_summary.service()
-    gloval_summary.avail()
-    gloval_summary.human_readable('disk_size')
+    resources = get_resources(request, tenant_id)
 
     return render_to_response('django_openstack/dash/volumes/create.html', {
         'create_form': create_form,
-        'total_avail_disk_size': gloval_summary.summary['total_avail_disk_size_hr']
+        'free_disk': resources['free_disk']
     }, context_instance=template.RequestContext(request))
 
 

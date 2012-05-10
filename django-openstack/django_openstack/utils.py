@@ -46,3 +46,27 @@ def utcnow():
     return datetime.datetime.utcnow()
 
 utcnow.override_time = None
+
+def get_resources(request, tenant):
+    from django_openstack import api
+    from os import statvfs
+    resources = {}
+    now =utcnow()
+    usage = api.usage_get(request, tenant, now, now)
+    try:
+        resources['active_disk'] = usage.total_active_disk_size
+    except:
+        resources['active_disk'] = 0
+    resources['active_disk'] += sum( [v.size for v in api.volume_list(request)] )
+    resources['active_disk'] += sum( [i.size/1073741824.0 for i in api.image_list_detailed(request)] )
+    fs = statvfs('/var/lib/glance/images')
+    resources['total_disk'] = fs.f_blocks*fs.f_bsize / 1073741824.0
+    resources['free_disk'] = resources['total_disk'] - resources['active_disk']
+    try:
+        resources['active_vcpus'] = usage.total_active_vcpus
+    except:
+        resources['active_vcpus'] = 0
+    quota = api.tenant_quota_get(request, tenant)
+    resources['total_vcpus'] = quota.cores
+    resources['free_vcpus'] = resources['total_vcpus'] - resources['active_vcpus']
+    return resources

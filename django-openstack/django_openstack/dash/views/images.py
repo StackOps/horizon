@@ -37,6 +37,7 @@ from django_openstack import forms
 from openstackx.api import exceptions as api_exceptions
 from glance.common import exception as glance_exception
 from novaclient import exceptions as novaclient_exceptions
+from django_openstack import utils
 
 from os import statvfs
 
@@ -159,11 +160,12 @@ class LaunchForm(forms.SelfHandlingForm):
         try:
             image = api.image_get(request, image_id)
             flavor = api.flavor_get(request, data['flavor'])
-            gloval_summary = api.GlobalSummary(request)
-            gloval_summary.service()
-            gloval_summary.avail()
-            if flavor.disk > gloval_summary.summary['total_avail_disk_size']:
+            resources = utils.get_resources(request, tenant_id)
+            if flavor.disk > resources['free_disk']:
                 messages.error(request, 'Unable to launch instance: Insufficient disk space.')
+                return
+            if flavor.vcpus > resources['free_vcpus']:
+                messages.error(request, 'Unable to launch instance: Insufficient free vcpus.')
                 return
             api.server_create(request,
                               data['name'],
@@ -259,10 +261,8 @@ def launch(request, tenant_id, image_id):
             fl = api.flavor_list(request)
 
             # Filter flavor list to available disck space.
-            gloval_summary = api.GlobalSummary(request)
-            gloval_summary.service()
-            gloval_summary.avail()
-            fl = [f for f in fl if f.disk<=gloval_summary.summary['total_avail_disk_size']]
+            resources = utils.get_resources(request, tenant_id)
+            fl = [f for f in fl if f.disk<=resources['free_disk']]
 
             # TODO add vcpu count to flavors
             sel = [(f.id, '%s (%svcpu / %sGB Disk / %sMB Ram )' %
