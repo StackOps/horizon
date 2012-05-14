@@ -102,7 +102,6 @@ def usage(request):
 
     global_summary.avail()
     global_summary.human_readable('disk_size')
-    global_summary.human_readable('ram_size')
 
     if request.GET.get('format', 'html') == 'csv':
         template_name = 'django_openstack/syspanel/instances/usage.csv'
@@ -110,8 +109,12 @@ def usage(request):
     else:
         template_name = 'django_openstack/syspanel/instances/usage.html'
         mimetype = "text/html"
-    global_summary.summary['total_active_vcpus'] = utils.get_resources(request, 1)['active_vcpus']
+    resources = utils.get_resources(request, 1)
+    global_summary.summary['total_active_vcpus'] = resources['active_vcpus']
     global_summary.summary['total_avail_vcpus'] -= global_summary.summary['total_active_vcpus']
+    global_summary.summary['total_active_ram_size'] = resources['active_memory']
+    global_summary.summary['total_avail_ram_size'] = global_summary.summary['total_ram_size']-resources['active_memory']
+    global_summary.human_readable('ram_size')
     return render_to_response(
     template_name, {
         'dateform': dateform,
