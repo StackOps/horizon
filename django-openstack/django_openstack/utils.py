@@ -69,4 +69,6 @@ def get_resources(request, tenant):
     quota = api.tenant_quota_get(request, tenant)
     resources['total_vcpus'] = quota.cores
     resources['free_vcpus'] = resources['total_vcpus'] - resources['active_vcpus']
+    instances = api.server_list(request)
+    resources['active_memory'] = sum([i.attrs.memory_mb for i in instances])
     return resources
