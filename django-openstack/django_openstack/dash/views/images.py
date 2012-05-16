@@ -317,6 +317,7 @@ def launch(request, tenant_id, image_id):
         'image': image,
         'form': form,
         'quotas': quotas,
+        'resources': utils.get_resources(request, tenant_id),
     }, context_instance=template.RequestContext(request))
 
 

@@ -5,7 +5,16 @@
       {{hidden}}
     {% endfor %}
     {% for field in form.visible_fields %}
-      {{field.label_tag}}
+      {% if field.label == 'Flavor' %}
+        <label for="id_flavor">
+          Flavor
+          <span style="font-weight: bold;">
+            [Maximum disk size {{resources.free_disk|floatformat}} GB]
+          </span>
+        </label>
+      {% else %}
+        {{field.label_tag}}
+      {% endif %}
       {{field.errors}}
       {{field}}
     {% endfor %}
