@@ -131,6 +131,7 @@ def index(request, tenant_id):
             return handled
     try:
         floating_ips = api.tenant_floating_ip_list(request)
+	total_ips = api.tenant_quota_get(request, request.user.tenant_id).floating_ips - len(floating_ips)
     except novaclient_exceptions.ClientException, e:
         floating_ips = []
         LOG.exception("ClientException in floating ip index")
@@ -143,6 +144,7 @@ def index(request, tenant_id):
         'disassociate_form': FloatingIpDisassociate(),
         'floating_ips': floating_ips,
         'release_form': ReleaseFloatingIp(),
+	'total_ips': total_ips,
     }, context_instance=template.RequestContext(request))
 
 
