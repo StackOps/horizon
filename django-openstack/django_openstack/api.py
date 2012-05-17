@@ -972,7 +972,7 @@ class GlobalSummary(object):
                             else service.stats.get('memory_mb', 0)
         if(settings.USE_NFS_DISKSPACE):
             fs = statvfs('/var/lib/glance/images')
-            self.summary['total_disk_size'] = fs.f_blocks*fs.f_bsize / 1073741824
+            self.summary['total_disk_size'] = fs.f_blocks*fs.f_bsize / 1073741824.0
         else:
             if len(compute_list):
                 self.summary['total_disk_size'] /= len(compute_list)
