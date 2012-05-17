@@ -116,9 +116,34 @@ def index(request, tenant_id):
         _, handled = f.maybe_handle(request)
         if handled:
             return handled
+    all_images = []
+    try:
+        all_images = api.image_list_detailed(request)
+        if not all_images:
+            messages.info(request, "There are currently no images.")
+    except glance_exception.ClientConnectionError, e:
+        LOG.exception("Error connecting to glance")
+        messages.error(request, "Error connecting to glance: %s" % str(e))
+    except glance_exception.Error, e:
+        LOG.exception("Error retrieving image list")
+        messages.error(request, "Error retrieving image list: %s" % str(e))
+    except api_exceptions.ApiException, e:
+        msg = "Unable to retreive image info from glance: %s" % str(e)
+        LOG.exception(msg)
+        messages.error(request, msg)
+    images = [im for im in all_images
+              if im['container_format'] not in ['aki', 'ari']]
     instances = []
     try:
         instances = api.server_list(request)
+	new_instances = []
+	for instance in instances:
+	    ins = instance
+	    ins.os_disk = '0'
+	    for image in images:
+    		if int(image['id']) == int(instance.attrs.image_ref):
+		    ins.os_disk = image['size'] / (1024 * 1024 * 1024)
+	    new_instances.append(ins)
     except api_exceptions.ApiException as e:
         LOG.exception('Exception in instance index')
         messages.error(request, 'Unable to get instance list: %s' % e.message)
@@ -130,7 +155,7 @@ def index(request, tenant_id):
 
     return shortcuts.render_to_response(
     'django_openstack/dash/instances/index.html', {
-        'instances': instances,
+        'instances': new_instances,
         'terminate_form': terminate_form,
         'reboot_form': reboot_form,
     }, context_instance=template.RequestContext(request))
@@ -138,10 +163,38 @@ def index(request, tenant_id):
 
 @login_required
 def refresh(request, tenant_id):
+#    instances = []
+#    try:
+#        instances = api.server_list(request)
+#    except Exception as e:
+#        messages.error(request, 'Unable to get instance list: %s' % e.message)
+    all_images = []
+    try:
+        all_images = api.image_list_detailed(request)
+        if not all_images:
+            messages.info(request, "There are currently no images.")
+    except glance_exception.ClientConnectionError, e:
+        LOG.exception("Error connecting to glance")
+        messages.error(request, "Error connecting to glance: %s" % str(e))
+    except glance_exception.Error, e:
+        LOG.exception("Error retrieving image list")
+        messages.error(request, "Error retrieving image list: %s" % str(e))
+    except api_exceptions.ApiException, e:
+        msg = "Unable to retreive image info from glance: %s" % str(e)
+        LOG.exception(msg)
+        messages.error(request, msg)
+    images = [im for im in all_images
+              if im['container_format'] not in ['aki', 'ari']]
     instances = []
     try:
         instances = api.server_list(request)
-    except Exception as e:
+        new_instances = []
+        for instance in instances:
+                ins = instance
+                ins.attrs.disk_gb = '99'
+                new_instances.append(ins)
+    except api_exceptions.ApiException as e:
+        LOG.exception('Exception in instance index')
         messages.error(request, 'Unable to get instance list: %s' % e.message)
 
     # We don't have any way of showing errors for these, so don't bother
@@ -151,7 +204,7 @@ def refresh(request, tenant_id):
 
     return shortcuts.render_to_response(
     'django_openstack/dash/instances/_instance_list.html', {
-        'instances': instances,
+        'instances': new_instances,
         'terminate_form': terminate_form,
         'reboot_form': reboot_form,
     }, context_instance=template.RequestContext(request))

@@ -49,7 +49,8 @@ class CreateForm(forms.SelfHandlingForm):
             LOG.exception("ClientException in CreateVolume")
             messages.error(request,
                 _('Error Creating Volume: %s') % e.message)
-        return redirect(request.build_absolute_uri())
+#        return redirect(request.build_absolute_uri())
+        return redirect('dash_volumes', self.tenant_id)
 
 
 class DeleteForm(forms.SelfHandlingForm):
@@ -71,7 +72,7 @@ class DeleteForm(forms.SelfHandlingForm):
 
 class AttachForm(forms.SelfHandlingForm):
     volume_id = forms.CharField(widget=forms.HiddenInput())
-    device = forms.CharField(label="Device Name", initial="/dev/vdb")
+    device = forms.CharField(label="Device Name", initial="/dev/vdc")
 
     def __init__(self, *args, **kwargs):
         super(AttachForm, self).__init__(*args, **kwargs)

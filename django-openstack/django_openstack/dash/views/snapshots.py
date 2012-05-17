@@ -39,7 +39,7 @@ from django_openstack import api
 from django_openstack import forms
 from openstackx.api import exceptions as api_exceptions
 from glance.common import exception as glance_exception
-
+from django_openstack import utils
 
 LOG = logging.getLogger('django_openstack.dash.views.snapshots')
 
@@ -52,6 +52,10 @@ class CreateSnapshot(forms.SelfHandlingForm):
 
     def handle(self, request, data):
         try:
+	    resources = utils.get_resources(request, request.user.tenant_id)
+	    instance = api.server_get(request, data['instance_id'])
+	    if instance.attrs.disk_gb > resources['free_disk']:
+	        raise Exception('Not enough space to store the snapshot: image_size=%s free_disk=%s' % (instance.attrs.disk_gb, resources['free_disk']))
             LOG.info('Creating snapshot "%s"' % data['name'])
             snapshot = api.snapshot_create(request,
                     data['instance_id'],
