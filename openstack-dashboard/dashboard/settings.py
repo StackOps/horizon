@@ -68,7 +68,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django_openstack.context_processors.swift',
     'django_openstack.context_processors.tenants',
     'django_openstack.context_processors.quantum',
-)
+    'django_openstack.context_processors.manage_tenants',
+    'django_openstack.context_processors.manage_quotas',
+    )
 
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.load_template_source',
@@ -128,4 +130,3 @@ if DEBUG:
         logging.info('Running in debug mode without debug_toolbar.')
 
 OPENSTACK_KEYSTONE_DEFAULT_ROLE = 'Member'
-USE_NFS_DISKSPACE = True

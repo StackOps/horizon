@@ -42,3 +42,10 @@ def swift(request):
 
 def quantum(request):
     return {'quantum_configured': settings.QUANTUM_ENABLED}
+
+def manage_quotas(request):
+    return {'quotas_enabled': not settings.DISABLE_QUOTAS}
+
+def manage_tenants(request):
+    return {'tenants_enabled': not settings.DISABLE_TENANTS}
+

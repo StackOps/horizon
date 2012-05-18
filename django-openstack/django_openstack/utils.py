@@ -19,6 +19,7 @@
 #    under the License.
 
 import datetime
+from django.conf import settings
 
 
 def time():
@@ -59,7 +60,7 @@ def get_resources(request, tenant):
         resources['active_disk'] = 0
     resources['active_disk'] += sum( [v.size for v in api.volume_list(request)] )
     resources['active_disk'] += sum( [i.size/1073741824.0 for i in api.image_list_detailed(request)] )
-    fs = statvfs('/var/lib/glance/images')
+    fs = statvfs(settings.SHARED_FOLDER)
     resources['total_disk'] = fs.f_blocks*fs.f_bsize / 1073741824.0
     resources['free_disk'] = resources['total_disk'] - resources['active_disk']
     try:
