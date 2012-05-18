@@ -49,7 +49,6 @@ class CreateForm(forms.SelfHandlingForm):
             LOG.exception("ClientException in CreateVolume")
             messages.error(request,
                 _('Error Creating Volume: %s') % e.message)
-#        return redirect(request.build_absolute_uri())
         return redirect('dash_volumes', self.tenant_id)
 
 
@@ -95,7 +94,8 @@ class AttachForm(forms.SelfHandlingForm):
             LOG.exception("ClientException in AttachVolume")
             messages.error(request,
                 _('Error attaching volume: %s') % e.message)
-        return redirect(request.build_absolute_uri())
+#        return redirect(request.build_absolute_uri())
+        return redirect('dash_volumes', request.user.tenant_id)
 
 
 class DetachForm(forms.SelfHandlingForm):
