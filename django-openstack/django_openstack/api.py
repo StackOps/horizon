@@ -524,7 +524,7 @@ def volume_get(request, volume_id):
     return Volume(novaclient(request).volumes.get(volume_id))
 
 def volume_instance_list(request, instance_id):
-    return novaclient(request).volumes.get_server_volumes(instance_id)
+    return [Volume(vol) for vol in novaclient(request).volumes.get_server_volumes(instance_id)]
 
 def volume_create(request, size, name, description):
     return Volume(novaclient(request).volumes.create(size, name, description))

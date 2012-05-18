@@ -140,6 +140,13 @@ def index(request, tenant_id):
 	for instance in instances:
 	    ins = instance
 	    ins.os_disk = '0'
+	    total_volumes = 0
+	    volumes = api.volume_instance_list(request,instance.id)
+	    for vol in volumes:
+		vol_id = vol.id
+                volume = api.volume_get(request, vol_id)
+	        total_volumes += volume.size
+	    ins.total_volumes = total_volumes
 	    for image in images:
     		if int(image['id']) == int(instance.attrs.image_ref):
 		    ins.os_disk = image['size'] / (1024 * 1024 * 1024)

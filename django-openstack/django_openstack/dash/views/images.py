@@ -260,13 +260,20 @@ def launch(request, tenant_id, image_id):
         try:
             fl = api.flavor_list(request)
 
+            image = api.image_get(request, image_id)
+            image_size = image.size / (1024 * 1024 * 1024)
             # Filter flavor list to available disck space.
             resources = utils.get_resources(request, tenant_id)
-            fl = [f for f in fl if f.disk<=resources['free_disk']]
-
+            fl = [f for f in fl if (f.disk + image_size) <= resources['free_disk']]
             # TODO add vcpu count to flavors
-            sel = [(f.id, '%s (%svcpu / %sGB Disk / %sMB Ram )' %
-                   (f.name, f.vcpus, f.disk, f.ram)) for f in fl]
+	    sel = []
+	    for f in fl:
+	        row = None
+		if f.disk>0:
+		    row = (f.id, '%s (%svcpu / %sGB OS Disk + %sGB Local Disk / %sMB Ram )' % (f.name, f.vcpus, image_size, f.disk, f.ram))
+		else:
+		    row = (f.id, '%s (%svcpu / %sGB OS Disk  / %sMB Ram )' % (f.name, f.vcpus,  image_size, f.ram))
+                sel.append(row)
             return sorted(sel)
         except api_exceptions.ApiException:
             LOG.exception('Unable to retrieve list of instance types')

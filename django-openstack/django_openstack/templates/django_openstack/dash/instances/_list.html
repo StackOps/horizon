@@ -33,8 +33,13 @@
             <ul>
               <li>{{instance.attrs.memory_mb|mbformat}} Ram</li>
               <li>{{instance.attrs.vcpus}} VCPU</li>
-              <li>{{instance.attrs.disk_gb}}GB Local Disk</li>
               <li>{{instance.os_disk}}GB OS Disk</li>
+              {% if instance.attrs.disk_gb != 0 %}
+                   <li>{{instance.attrs.disk_gb}}GB Local Disk</li>
+              {% endif %}
+ 	      {% if instance.total_volumes != 0 %}
+                   <li>{{instance.total_volumes}}GB Attached Volumes</li>
+	      {% endif %}
             </ul>
           </td>
           <td class="ip_list">

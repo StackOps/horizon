@@ -59,7 +59,7 @@ class CreateSnapshot(forms.SelfHandlingForm):
             LOG.info('Creating snapshot "%s"' % data['name'])
             snapshot = api.snapshot_create(request,
                     data['instance_id'],
-                    data['name'])
+                    data['name'] + '.snap')
             instance = api.server_get(request, data['instance_id'])
 
             messages.info(request, 'Snapshot "%s" created for instance "%s"' %\
