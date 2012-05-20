@@ -13,10 +13,16 @@
 {% endblock page_header %}
 
 {% block dash_main %}
+
+  {% if tenants_enabled %}
+    <div></div>
+  {% else %}
     <div class="message_box info">
       <h2>Info</h2>
       <p>Number of IPs available: {{total_ips}}</p>
     </div>
+  {% endif %}
+
   {% if floating_ips %}
     {% include 'django_openstack/dash/floating_ips/_list.html' %}
   {% else %}
