@@ -58,7 +58,7 @@ def get_resources(request, tenant):
         resources['active_disk'] = usage.total_active_disk_size
     except:
         resources['active_disk'] = 0
-    resources['active_disk'] += sum( [v.size for v in api.volume_list(request)] )
+    resources['active_disk'] += sum( [v.size for v in api.volume_list(request) if v.status != 'in-use'] )
     resources['active_disk'] += sum( [i.size/1073741824.0 for i in api.image_list_detailed(request)] )
     fs = statvfs(settings.SHARED_FOLDER)
     resources['total_disk'] = fs.f_blocks*fs.f_bsize / 1073741824.0
