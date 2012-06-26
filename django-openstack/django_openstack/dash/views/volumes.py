@@ -71,7 +71,7 @@ class DeleteForm(forms.SelfHandlingForm):
 
 class AttachForm(forms.SelfHandlingForm):
     volume_id = forms.CharField(widget=forms.HiddenInput())
-    device = forms.CharField(label="Device Name", initial="/dev/vdc")
+    device = forms.CharField(label="Device Name", initial="/dev/vdb")
 
     def __init__(self, *args, **kwargs):
         super(AttachForm, self).__init__(*args, **kwargs)
