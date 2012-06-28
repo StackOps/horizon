@@ -26,6 +26,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response
 from django.shortcuts import redirect
 from django.utils.translation import ugettext as _
+from django.core import validators
 
 import datetime
 import json
@@ -50,7 +51,7 @@ class UserForm(forms.Form):
         self.fields['tenant_id'].choices = [[tenant.id, tenant.id]
                 for tenant in tenant_list]
 
-    name = forms.CharField(label="Name")
+    name = forms.CharField(label="Name", validators=[validators.validate_slug])
     email = forms.CharField(label="Email")
     password = forms.CharField(label="Password",
                                widget=forms.PasswordInput(render_value=False),

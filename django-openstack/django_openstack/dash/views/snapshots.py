@@ -40,6 +40,7 @@ from django_openstack import forms
 from openstackx.api import exceptions as api_exceptions
 from glance.common import exception as glance_exception
 from django_openstack import utils
+from django.core import validators
 
 LOG = logging.getLogger('django_openstack.dash.views.snapshots')
 
@@ -48,7 +49,7 @@ class CreateSnapshot(forms.SelfHandlingForm):
     tenant_id = forms.CharField(widget=forms.HiddenInput())
     instance_id = forms.CharField(widget=forms.TextInput(
         attrs={'readonly': 'readonly'}))
-    name = forms.CharField(max_length="20", label="Snapshot Name")
+    name = forms.CharField(max_length="20", label="Snapshot Name", validators=[validators.validate_slug])
 
     def handle(self, request, data):
         try:
