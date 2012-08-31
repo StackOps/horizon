@@ -38,6 +38,7 @@ from openstackx.api import exceptions as api_exceptions
 from glance.common import exception as glance_exception
 from novaclient import exceptions as novaclient_exceptions
 from django_openstack import utils
+from django.core import validators
 
 from os import statvfs
 
@@ -110,7 +111,7 @@ class UpdateImageForm(forms.SelfHandlingForm):
 
 
 class LaunchForm(forms.SelfHandlingForm):
-    name = forms.CharField(max_length=80, label="Server Name")
+    name = forms.CharField(max_length=80, label="Server Name", validators=[validators.validate_slug])
     image_id = forms.CharField(widget=forms.HiddenInput())
     tenant_id = forms.CharField(widget=forms.HiddenInput())
     user_data = forms.CharField(widget=forms.Textarea,

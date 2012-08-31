@@ -19,13 +19,13 @@ from django_openstack import api
 from django_openstack import forms
 from django_openstack.utils import get_resources
 from novaclient import exceptions as novaclient_exceptions
-
+from django.core import validators
 
 LOG = logging.getLogger('django_openstack.dash.views.volumes')
 
 
 class CreateForm(forms.SelfHandlingForm):
-    name = forms.CharField(max_length="255", label="Volume Name")
+    name = forms.CharField(max_length="255", label="Volume Name", validators=[validators.validate_slug])
     description = forms.CharField(widget=forms.Textarea,
         label=_("Description"), required=False)
     size = forms.IntegerField(min_value=1, label="Size (GB)")
